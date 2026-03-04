@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פרופיל Jobi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #fefff1; font-family: 'Heebo', sans-serif; }
+        .navbar-jobi { background-color: #feb900; }
+        .glass-panel { background: white; border: 2px solid #feb900; border-radius: 25px; }
+        .xp-bar-bg { background: #e0e0e0; height: 12px; border-radius: 10px; overflow: hidden; }
+        .xp-bar-fill { background: linear-gradient(90deg, #feb900, #ff8c00); height: 100%; transition: width 0.5s ease; }
+    </style>
+</head>
+<body class="pb-10">
+
+    <header class="navbar-jobi p-3 sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto flex items-center justify-between">
+            <a href="../index.html" class="flex items-center gap-2">
+                <img src="../img/logo.png" alt="Jobi" class="h-10 w-auto">
+                <span class="text-2xl font-black text-black">Jobi</span>
+            </a>
+            <button onclick="logout()" class="text-sm font-bold bg-white/30 px-3 py-1 rounded-lg">יציאה</button>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 mt-8">
+        
+        <div class="glass-panel p-6 shadow-sm mb-6 flex flex-col items-center text-center">
+            <div class="relative">
+                <img id="user-avatar" src="../img/default-avatar.png" class="w-24 h-24 rounded-full border-4 border-[#feb900] object-cover mb-4">
+                <div id="user-level-badge" class="absolute -bottom-1 -right-1 bg-black text-[#feb900] font-black w-8 h-8 rounded-full flex items-center justify-center border-2 border-[#feb900]">
+                    1
+                </div>
+            </div>
+            
+            <h1 id="user-full-name" class="text-2xl font-black text-gray-900 leading-tight">טוען שם...</h1>
+            <p id="user-age-text" class="text-gray-600 mb-4">גיל: --</p>
+
+            <div class="w-full max-w-sm mt-4">
+                <div class="flex justify-between text-sm font-bold mb-1">
+                    <span>רמה <span id="current-level">1</span></span>
+                    <span><span id="current-xp">0</span> / 100 XP</span>
+                </div>
+                <div class="xp-bar-bg">
+                    <div id="xp-progress" class="xp-bar-fill" style="width: 0%"></div>
+                </div>
+                <p class="text-[12px] text-gray-500 mt-2 italic">עוד 100 XP לרמה הבאה!</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4 mb-8">
+            <button onclick="addXP(20)" class="bg-white border-2 border-[#feb900] p-4 rounded-2xl flex flex-col items-center hover:bg-[#feb900]/10 transition">
+                <span class="text-2xl">📝</span>
+                <span class="font-bold text-sm mt-1">דיווח משמרת</span>
+            </button>
+            <button onclick="addXP(10)" class="bg-white border-2 border-[#feb900] p-4 rounded-2xl flex flex-col items-center hover:bg-[#feb900]/10 transition">
+                <span class="text-2xl">⭐</span>
+                <span class="font-bold text-sm mt-1">דרג מעסיק</span>
+            </button>
+        </div>
+
+        <h2 class="text-xl font-black mb-4 pr-2">הישגים שלי</h2>
+        <div class="glass-panel p-6">
+            <div class="flex justify-around text-center">
+                <div>
+                    <p class="text-2xl font-black text-[#feb900]">0</p>
+                    <p class="text-gray-500 text-xs font-bold uppercase">משמרות</p>
+                </div>
+                <div class="border-x border-gray-200 px-8">
+                    <p class="text-2xl font-black text-[#feb900]">0</p>
+                    <p class="text-gray-500 text-xs font-bold uppercase">ביקורות</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-black text-[#feb900]">#1</p>
+                    <p class="text-gray-500 text-xs font-bold uppercase">דירוג</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        // 1. ПРОВЕРКА АВТОРИЗАЦИИ
+        document.addEventListener('DOMContentLoaded', () => {
+            const userData = JSON.parse(localStorage.getItem('jobi_user'));
+
+            if (!userData) {
+                // Если данных нет, редирект на логин
+                window.location.href = '../account/login.html';
+                return;
+            }
+
+            // Заполнение данных
+            document.getElementById('user-full-name').textContent = `${userData.firstName} ${userData.lastName}`;
+            document.getElementById('user-age-text').textContent = `גיל: ${userData.age}`;
+            if(userData.avatar) document.getElementById('user-avatar').src = userData.avatar;
+            
+            updateUI();
+        });
+
+        // 2. ЛОГИКА ГЕЙМИФИКАЦИИ (XP)
+        function updateUI() {
+            let xp = parseInt(localStorage.getItem('jobi_xp')) || 0;
+            let level = Math.floor(xp / 100) + 1;
+            let currentLevelXP = xp % 100;
+
+            document.getElementById('current-xp').textContent = currentLevelXP;
+            document.getElementById('current-level').textContent = level;
+            document.getElementById('user-level-badge').textContent = level;
+            document.getElementById('xp-progress').style.width = currentLevelXP + '%';
+        }
+
+        function addXP(amount) {
+            let xp = parseInt(localStorage.getItem('jobi_xp')) || 0;
+            xp += amount;
+            localStorage.setItem('jobi_xp', xp);
+            
+            // Маленький эффект анимации
+            alert("כל הכבוד! קיבלת " + amount + " XP");
+            updateUI();
+        }
+
+        function logout() {
+            localStorage.removeItem('jobi_user');
+            localStorage.removeItem('jobi_xp');
+            window.location.href = '../account/login.html';
+        }
+    </script>
+</body>
+</html>
