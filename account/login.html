@@ -126,7 +126,7 @@
                         avatar: result.user.photoURL,
                         age: "16"
                     }));
-                    window.location.href = '../profile.html';
+                    window.location.href = '../app/profile.html';
                 }, 1500);
             } catch (error) {
                 showAlert("שגיאה", "לא הצלחנו לחבר אותך עם Google", "error");
@@ -157,7 +157,7 @@
             try {
                 await signInWithEmailAndPassword(auth, email, password);
                 showAlert("מעולה!", "נכנסת למערכת בהצלחה");
-                setTimeout(() => window.location.href = '../profile.html', 1500);
+                setTimeout(() => window.location.href = '../app/profile.html', 1500);
             } catch (error) {
                 showAlert("כניסה נכשלה", "אימייל או סיסמה לא נכונים", "error");
             }
