@@ -8,25 +8,39 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { background-color: #fefff1; font-family: 'Heebo', sans-serif; min-height: 100vh; }
-        .input-field { border: 2px solid #feb900; border-radius: 12px; outline: none; padding: 10px; width: 100%; text-align: right; }
-        .btn-primary { background-color: #feb900; font-weight: 900; transition: 0.3s; }
+        body { background-color: #fefff1; font-family: 'Heebo', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .register-card { background: white; border: 2px solid #feb900; border-radius: 30px; box-shadow: 0 10px 25px rgba(254, 185, 0, 0.1); overflow: hidden; }
+        .input-field { border: 2px solid #feb900; border-radius: 12px; outline: none; transition: 0.3s; padding: 10px; width: 100%; text-align: right; }
+        .input-field:focus { box-shadow: 0 0 8px rgba(254, 185, 0, 0.4); }
+        .btn-primary { background-color: #feb900; transition: 0.3s; font-weight: 900; }
         .btn-primary:hover { background-color: #e5a700; transform: translateY(-2px); }
         
         /* Стили для загрузки фото */
-        .banner-upload { width: 100%; height: 120px; background: #eee; border-radius: 15px; overflow: hidden; position: relative; border: 2px dashed #feb900; cursor: pointer; }
-        .avatar-upload { width: 90px; height: 90px; background: white; border: 3px solid #feb900; border-radius: 50%; position: absolute; bottom: -45px; right: 20px; z-index: 10; cursor: pointer; overflow: hidden; }
+        .banner-upload { width: 100%; height: 100px; background: #f3f4f6; position: relative; border-bottom: 2px solid #feb900; cursor: pointer; overflow: hidden; }
+        .avatar-upload { width: 80px; height: 80px; background: white; border: 3px solid #feb900; border-radius: 50%; position: absolute; bottom: -40px; right: 20px; z-index: 10; cursor: pointer; overflow: hidden; }
         .preview-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        #custom-alert { transition: all 0.3s ease; }
+        .modal-content { border: 3px solid #feb900; border-radius: 25px; background: #fefff1; transform: scale(0.9); transition: 0.3s ease; }
+        #custom-alert:not(.hidden) .modal-content { transform: scale(1); }
     </style>
 </head>
-<body class="p-4 flex items-center justify-center">
+<body class="p-4">
 
-    <div class="bg-white w-full max-w-lg rounded-[30px] shadow-xl border-2 border-[#feb900] overflow-hidden mb-10">
-        
-        <div class="relative mb-14">
+    <div id="custom-alert" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6 text-center">
+        <div class="modal-content w-full max-w-xs p-8 shadow-2xl">
+            <img id="alert-img" src="../img/logo_reverse.png" class="h-20 mx-auto mb-4 object-contain">
+            <h3 id="alert-title" class="text-xl font-black mb-2 text-gray-900"></h3>
+            <p id="alert-text" class="text-gray-600 mb-6"></p>
+            <button onclick="closeAlert()" class="btn-primary w-full py-2 rounded-xl text-black">אוקיי</button>
+        </div>
+    </div>
+
+    <div class="register-card w-full max-w-lg">
+        <div class="relative mb-12">
             <div class="banner-upload" onclick="document.getElementById('banner-input').click()">
                 <img id="banner-preview" src="" class="preview-img hidden">
-                <div id="banner-placeholder" class="flex items-center justify-center h-full text-gray-400 text-sm">לחץ להוספת תמונת רקע</div>
+                <div id="banner-placeholder" class="flex items-center justify-center h-full text-gray-400 text-xs font-bold">לחץ להוספת תמונת רקע</div>
             </div>
             <div class="avatar-upload" onclick="document.getElementById('avatar-input').click()">
                 <img id="avatar-preview" src="../img/default-avatar.png" class="preview-img">
@@ -35,8 +49,11 @@
             <input type="file" id="avatar-input" class="hidden" accept="image/*" onchange="previewImage(this, 'avatar-preview')">
         </div>
 
-        <form id="register-form" class="p-8 pt-0 space-y-4">
-            <h2 class="text-2xl font-black text-center mb-6">יצירת פרופיל חדש</h2>
+        <form id="register-form" class="px-8 pb-8 space-y-4">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-black text-gray-900">יצירת פרופיל חדש</h1>
+                <p class="text-gray-500 text-xs italic">הצטרף לקהילת Jobi ומצא עבודה בקלות</p>
+            </div>
 
             <div class="grid grid-cols-2 gap-4">
                 <div>
@@ -44,7 +61,7 @@
                     <input type="text" id="fullName" required class="input-field" placeholder="ישראל ישראלי">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold mb-1 mr-1">שם משתמש (Nickname)</label>
+                    <label class="block text-xs font-bold mb-1 mr-1">שם משתמש</label>
                     <input type="text" id="nickname" required class="input-field" placeholder="israel123">
                 </div>
             </div>
@@ -52,19 +69,17 @@
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block text-xs font-bold mb-1 mr-1">תאריך לידה</label>
-                    <input type="date" id="birthDate" required class="input-field">
+                    <input type="date" id="birthDate" required class="input-field text-sm">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold mb-1 mr-1">עיר</label>
-                    <select id="city" required class="input-field">
+                    <label class="block text-xs font-bold mb-1 mr-1">עיר מגורים</label>
+                    <select id="city" required class="input-field text-sm">
                         <option value="">בחר עיר...</option>
                         <option value="Beersheba">באר שבע</option>
                         <option value="Tel Aviv">תל אביב</option>
                         <option value="Jerusalem">ירושלים</option>
                         <option value="Haifa">חיפה</option>
                         <option value="Ashdod">אשדוד</option>
-                        <option value="Netanya">נתניה</option>
-                        <option value="Rishon LeZion">ראשון לציון</option>
                     </select>
                 </div>
             </div>
@@ -79,21 +94,12 @@
                 <input type="password" id="password" required class="input-field" placeholder="••••••••">
             </div>
 
-            <button type="submit" class="btn-primary w-full py-4 rounded-2xl text-lg shadow-lg mt-4">הירשם עכשיו</button>
+            <button type="submit" class="btn-primary w-full py-3 rounded-xl text-lg shadow-md mt-4">הירשם עכשיו</button>
             
-            <p class="text-center text-sm text-gray-500 mt-4">
-                כבר יש לך חשבון? <a href="login.html" class="text-orange-600 font-bold">התחבר כאן</a>
+            <p class="text-center text-sm text-gray-600 mt-4">
+                כבר יש לך חשבון? <a href="login.html" class="text-orange-600 font-bold hover:underline">התחבר כאן</a>
             </p>
         </form>
-    </div>
-
-    <div id="custom-alert" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6 text-center">
-        <div class="bg-[#fefff1] border-4 border-[#feb900] rounded-[25px] w-full max-w-xs p-8 shadow-2xl">
-            <img id="alert-img" src="../img/logo.png" class="h-20 mx-auto mb-4">
-            <h3 id="alert-title" class="text-xl font-black mb-2"></h3>
-            <p id="alert-text" class="text-gray-600 mb-6"></p>
-            <button onclick="closeAlert()" class="btn-primary w-full py-2 rounded-xl">אוקיי</button>
-        </div>
     </div>
 
     <script type="module">
@@ -101,7 +107,6 @@
         import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
         import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // Твой конфиг Firebase
         const firebaseConfig = {
             apiKey: "AIzaSyDA9KfdcE2acdeSgkfRVS_KiX1eBBrR1Ao",
             authDomain: "jobi-il.firebaseapp.com",
@@ -115,7 +120,6 @@
         const auth = getAuth(app);
         const db = getFirestore(app);
 
-        // Функция предпросмотра изображений
         window.previewImage = (input, imgId, placeholderId) => {
             const file = input.files[0];
             if (file) {
@@ -130,10 +134,8 @@
             }
         };
 
-        // Обработка регистрации
         document.getElementById('register-form').onsubmit = async (e) => {
             e.preventDefault();
-            
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
             const fullName = document.getElementById('fullName').value;
@@ -142,33 +144,23 @@
             const birthDate = document.getElementById('birthDate').value;
 
             try {
-                // Создаем юзера в Auth
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
-                // Сохраняем остальные данные в Firestore
                 await setDoc(doc(db, "users", user.uid), {
-                    fullName,
-                    nickname,
-                    city,
-                    birthDate,
-                    xp: 0,
-                    level: 1,
-                    avatar: document.getElementById('avatar-preview').src, // Пока Base64 для теста
+                    fullName, nickname, city, birthDate, xp: 0, level: 1,
+                    avatar: document.getElementById('avatar-preview').src,
                     banner: document.getElementById('banner-preview').src
                 });
 
-                // Сохраняем в localStorage для быстрого доступа в профиле
                 localStorage.setItem('jobi_user', JSON.stringify({
                     firstName: fullName.split(' ')[0],
-                    lastName: fullName.split(' ')[1] || "",
                     avatar: document.getElementById('avatar-preview').src,
                     age: calculateAge(birthDate)
                 }));
 
                 showModal("מעולה!", "נרשמת בהצלחה ל-Jobi", "success");
                 setTimeout(() => window.location.href = '../profile.html', 1500);
-
             } catch (error) {
                 showModal("אופס!", "ההרשמה נכשלה: " + error.message, "error");
             }
