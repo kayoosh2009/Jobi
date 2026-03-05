@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobi Admin — Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #000; font-family: 'Heebo', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .admin-box { border: 2px solid #feb900; box-shadow: 0 0 20px rgba(254, 185, 0, 0.4); }
+        input { background: #111 !important; color: white !important; border: 1px solid #333 !important; }
+        input:focus { border-color: #feb900 !important; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-box bg-black p-10 rounded-3xl w-full max-w-sm text-center">
+        <img src="../img/logo.png" class="h-16 mx-auto mb-6 grayscale hover:grayscale-0 transition duration-500">
+        <h1 class="text-white text-2xl font-black mb-8 italic">ADMIN <span class="text-[#feb900]">PANEL</span></h1>
+        
+        <form id="admin-login-form" class="space-y-4">
+            <input type="email" id="email" placeholder="Admin Email" required class="w-full p-3 rounded-xl outline-none">
+            <input type="password" id="pass" placeholder="Password" required class="w-full p-3 rounded-xl outline-none">
+            
+            <div id="error" class="text-red-500 text-sm font-bold hidden">גישה נדחתה. נתונים שגויים.</div>
+            
+            <button type="submit" class="w-full bg-[#feb900] text-black font-black py-3 rounded-xl hover:bg-yellow-500 transition mt-4">
+                ENTER SYSTEM
+            </button>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('admin-login-form').onsubmit = (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const pass = document.getElementById('pass').value;
+
+            // Твои секретные данные
+            if (email === 'kayoosh@jobi.israel' && pass === 'Kayoosh2009!') {
+                localStorage.setItem('jobi_admin', 'true');
+                window.location.href = 'dash.html';
+            } else {
+                const err = document.getElementById('error');
+                err.classList.remove('hidden');
+                setTimeout(() => err.classList.add('hidden'), 3000);
+            }
+        };
+    </script>
+</body>
+</html>
