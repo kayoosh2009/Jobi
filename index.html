@@ -8,170 +8,171 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            background-color: #fefff1; 
-            font-family: 'Heebo', sans-serif;
-            color: #333;
-        }
-        .navbar-jobi {
-            background-color: #feb900; 
-        }
-        .job-card {
-            background: #ffffff;
-            border: 2px solid #feb900; 
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-        .job-card:hover {
-            box-shadow: 0 10px 20px rgba(254, 185, 0, 0.2);
-        }
-        /* Обновленный баннер 728x90 */
+        body { background-color: #fefff1; font-family: 'Heebo', sans-serif; color: #333; overflow-x: hidden; }
+        .navbar-jobi { background-color: #feb900; }
+        .job-card { background: white; border: 2px solid #feb900; border-radius: 20px; overflow: hidden; transition: 0.3s; }
+        
+        /* Боковое меню */
+        .side-menu { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: white; z-index: 100; transition: 0.4s; border-right: 3px solid #feb900; box-shadow: 5px 0 15px rgba(0,0,0,0.1); }
+        .side-menu.active { left: 0; }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 90; backdrop-filter: blur(2px); }
+
+        /* Бургер иконка */
+        .burger-btn { display: flex; flex-direction: column; gap: 4px; cursor: pointer; padding: 5px; }
+        .burger-btn span { width: 24px; height: 3px; background: black; border-radius: 2px; }
+
+        .filter-select { border: 2px solid #feb900; border-radius: 10px; padding: 5px 10px; outline: none; background: white; font-size: 14px; }
+
         .banner-container {
             width: 100%;
-            max-width: 728px; /* Максимальная ширина по стандарту */
-            height: 90px;      /* Фиксированная высота */
+            max-width: 728px;
+            height: 90px;
             margin: 0 auto;
             position: relative;
             overflow: hidden;
-            border-radius: 8px; /* Уменьшил радиус, так как баннер узкий */
+            border-radius: 8px;
         }
-
         .banner-slide {
             position: absolute;
             width: 100%;
             height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-            background-size: contain; /* Картинка впишется полностью без обрезки */
+            background-size: contain;
             background-repeat: no-repeat;
             background-position: center;
-            background-color: #eee; /* Фон, если картинка меньше размером */
-        }
-
+            background-color: #eee;
+            transition: opacity 1s ease-in-out;
         }
         .banner-slide.active { opacity: 1; }
     </style>
 </head>
 <body>
 
+    <div id="overlay" class="overlay" onclick="toggleMenu(false)"></div>
+
+    <div id="ad-modal" class="hidden fixed inset-0 flex items-center justify-center z-[200] p-4 bg-black/40">
+        <div class="bg-white border-4 border-[#feb900] rounded-[25px] p-8 max-w-xs text-center shadow-2xl">
+            <h3 class="text-xl font-black mb-4">מעבר לפרסומת</h3>
+            <p class="text-gray-600 mb-6 font-bold">האם אתה בטוח שברצונך לעבור לקישור הפרסומי?</p>
+            <div class="flex gap-2">
+                <a id="ad-link" href="#" target="_blank" onclick="closeAdModal()" class="bg-[#feb900] flex-1 py-2 rounded-xl font-black text-center">כן, עבור</a>
+                <button onclick="closeAdModal()" class="bg-gray-200 flex-1 py-2 rounded-xl font-bold">הישאר</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="side-menu" class="side-menu p-6 text-right">
+        <div class="flex justify-between items-center mb-10">
+            <button onclick="toggleMenu(false)" class="text-2xl font-bold">✕</button>
+            <h2 class="text-2xl font-black italic">Jobi Menu</h2>
+        </div>
+        <nav id="nav-content" class="flex flex-col gap-6 font-bold text-lg">
+            </nav>
+    </div>
+
     <header class="navbar-jobi p-3 sticky top-0 z-50 shadow-md">
         <div class="container mx-auto flex items-center justify-between gap-4">
             
             <div class="flex items-center gap-2 flex-shrink-0">
-                <a href="index.html" class="flex items-center gap-2">
-                    <img src="img/logo.png" alt="Jobi" class="h-10 w-auto">
-                    <div class="flex flex-col leading-tight">
-                        <span class="text-2xl font-black text-black">Jobi</span>
-                        <span id="user-ip" class="text-[10px] text-gray-800 font-mono">Loading IP...</span>
-                    </div>
-                </a>
+                <img src="img/logo.png" alt="Jobi" class="h-10 w-auto">
+                <div class="flex flex-col leading-tight">
+                    <span class="text-2xl font-black text-black">Jobi</span>
+                    <span id="user-ip" class="text-[10px] text-gray-800 font-mono">127.0.0.1</span>
+                </div>
             </div>
 
-            <form action="app/func/search.html" method="GET" class="flex-grow flex items-center bg-white rounded-full px-4 py-1 max-w-md shadow-sm">
-                <input type="text" name="q" placeholder="חפש עבודה..." class="w-full py-2 text-right bg-transparent outline-none text-gray-700">
+            <form action="app/func/search.html" method="GET" class="flex-grow flex items-center bg-white rounded-full px-4 py-1 max-w-md shadow-sm border-2 border-transparent focus-within:border-black transition">
+            <input type="text" name="q" placeholder="חפש עבודה..." class="w-full py-2 text-right bg-transparent outline-none text-gray-700 font-bold">
                 <button type="submit">
-                    <img src="img/search.png" alt="Search" class="h-5 w-5">
+                    <img src="img/search.png" alt="Search" class="h-5 w-5 opacity-70 hover:opacity-100">
                 </button>
             </form>
 
-            <div class="flex items-center gap-3">
-                <a href="https://t.me/your_channel" target="_blank">
-                    <img src="img/telegram.png" alt="Telegram" class="h-8 w-8 hover:scale-110 transition">
-                </a>
-                <a href="https://linkedin.com/company/your" target="_blank">
-                    <img src="img/linkedin.png" alt="Linkedin" class="h-8 w-8 hover:scale-110 transition">
-                </a>
-                <a href="app/profile.html">
-                    <img src="img/profile.png" alt="Profile" class="h-10 w-10 rounded-full border-2 border-white shadow-sm">
-                </a>
+            <div class="flex items-center gap-4">
+                <div class="hidden sm:flex gap-3">
+                    <a href="#"><img src="img/telegram.png" class="h-7 w-7"></a>
+                    <a href="#"><img src="img/linkedin.png" class="h-7 w-7"></a>
+                </div>
+                
+                <div class="flex items-center gap-2 bg-white/20 p-1 pr-3 rounded-full">
+                    <a href="app/profile.html">
+                        <img src="img/profile.png" alt="Profile" class="h-9 w-9 rounded-full border-2 border-white">
+                    </a>
+                    <div class="burger-btn" onclick="toggleMenu(true)">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
     <main class="container mx-auto px-4 py-6">
-        
-        <section class="banner-container mb-10 shadow-lg">
-            <div class="banner-slide active" style="background-image: url('img/ads/banner1.jpg');"></div>
-            <div class="banner-slide" style="background-image: url('img/ads/banner2.jpg');"></div>
-            <div class="banner-slide" style="background-image: url('img/ads/banner3.jpg');"></div>
-        </section>
 
-        <h2 class="text-2xl font-black mb-6 text-right border-r-4 border-[#feb900] pr-3">משרות חמות</h2>
+        <div class="banner-container mb-10 shadow-lg cursor-pointer" onclick="openAdModal('https://example.com')">
+            <div class="banner-slide active" style="background-image: url('img/banner.png');"></div>
+        </div>
+
+        </div>
+
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b-4 border-[#feb900] pb-4">
+            <h2 class="text-3xl font-black">משרות זמינות</h2>
+            
+            <div class="flex flex-wrap gap-2 items-center bg-white/50 p-3 rounded-2xl shadow-inner">
+                <img src="img/filter.png" class="h-5 w-5 ml-2">
+                <select id="f-city" class="filter-select"><option>עיר...</option><option>תל אביב</option><option>באר שבע</option></select>
+                <select id="f-lang" class="filter-select">
+                    <option>שפה...</option>
+                    <option>עברית</option>
+                    <option>רוסית</option>
+                    <option>ערבית</option>
+                    <option>פורטוגזית</option>
+                </select>
+                <input type="number" id="f-salary" placeholder="שכר בשח" class="filter-select w-24">
+                <select id="f-rate" class="filter-select"><option>דירוג...</option><option>4+ ⭐</option></select>
+            </div>
+        </div>
+
         <div id="jobs-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             </div>
     </main>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDA9KfdcE2acdeSgkfRVS_KiX1eBBrR1Ao",
-            authDomain: "jobi-il.firebaseapp.com",
-            projectId: "jobi-il",
-            storageBucket: "jobi-il.firebasestorage.app",
-            messagingSenderId: "1049483275681",
-            appId: "1:1049483275681:web:ef9bb3c9343aa0939d6fe0"
+        // --- ЛОГИКА МЕНЮ ---
+        window.toggleMenu = (open) => {
+            document.getElementById('side-menu').classList.toggle('active', open);
+            document.getElementById('overlay').style.display = open ? 'block' : 'none';
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // --- ОПРЕДЕЛЕНИЕ IP ---
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('user-ip').textContent = data.ip;
-            })
-            .catch(() => {
-                document.getElementById('user-ip').textContent = '127.0.0.1';
-            });
-
-        // --- ЛОГИКА БАННЕРА ---
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.banner-slide');
-        function nextSlide() {
-            if(slides.length > 0) {
-                slides[currentSlide].classList.remove('active');
-                currentSlide = (currentSlide + 1) % slides.length;
-                slides[currentSlide].classList.add('active');
-            }
-        }
-        setInterval(nextSlide, 10000);
-
-        // --- ЗАГРУЗКА РАБОТ ---
-        async function loadJobs() {
-            const container = document.getElementById('jobs-list');
-            try {
-                const querySnapshot = await getDocs(collection(db, "jobs"));
-                querySnapshot.forEach((doc) => {
-                    const job = doc.data();
-                    const card = `
-                        <div class="job-card shadow-sm">
-                            <img src="${job.image || 'img/work-default.png'}" class="w-full h-48 object-cover">
-                            <div class="p-5">
-                                <h3 class="text-xl font-bold mb-2">${job.title}</h3>
-                                <div class="text-sm text-gray-600 space-y-1 mb-4">
-                                    <p>📍 <b>מיקום:</b> ${job.location}</p>
-                                    <p>🛠 <b>סוג עבודה:</b> ${job.type}</p>
-                                    <p>💰 <b>שכר:</b> ₪${job.salary} / שעה</p>
-                                </div>
-                                <a href="app/view.html?id=${doc.id}" 
-                                   class="block text-center bg-[#feb900] text-black font-bold py-2 rounded-lg hover:bg-yellow-500 transition">
-                                    צפה בפרטים
-                                </a>
-                            </div>
-                        </div>
-                    `;
-                    container.innerHTML += card;
-                });
-            } catch (e) {
-                console.error("Error loading jobs: ", e);
+        function renderNav() {
+            const user = JSON.parse(localStorage.getItem('jobi_user'));
+            const nav = document.getElementById('nav-content');
+            
+            if (user) {
+                nav.innerHTML = `
+                    <a href="app/profile.html" class="hover:text-[#feb900]">👤 פרופיל</a>
+                    <a href="app/settings.html" class="hover:text-[#feb900]">⚙️ הגדרות</a>
+                    <a href="app/my-jobs.html" class="hover:text-[#feb900]">💼 המשרות שלי</a>
+                    <a href="app/chat.html" class="hover:text-[#feb900]">💬 צ'אט</a>
+                    <a href="app/support.html" class="hover:text-[#feb900]">🎧 תמיכה טכנית</a>
+                    <button onclick="localStorage.clear(); location.reload();" class="text-red-500 mt-10">יציאה מהחשבון</button>
+                `;
+            } else {
+                nav.innerHTML = `
+                    <p class="text-sm text-gray-500 mb-4 font-normal italic">נראה שעוד לא נרשמת...</p>
+                    <a href="account/login.html" class="bg-[#feb900] text-center p-3 rounded-xl">התחברות</a>
+                    <a href="account/register.html" class="border-2 border-[#feb900] text-center p-3 rounded-xl">הרשמה</a>
+                    <a href="app/support.html" class="mt-10">🎧 תמיכה טכנית</a>
+                `;
             }
         }
 
-        loadJobs();
+        // --- РЕКЛАМА ---
+        window.openAdModal = (url) => {
+            document.getElementById('ad-link').href = url;
+            document.getElementById('ad-modal').classList.remove('hidden');
+        };
+        window.closeAdModal = () => document.getElementById('ad-modal').classList.add('hidden');
+
+        renderNav();
     </script>
 </body>
 </html>
