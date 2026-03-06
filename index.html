@@ -17,15 +17,31 @@
         .side-menu.active { left: 0; }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 90; backdrop-filter: blur(2px); }
 
-        /* Бургер иконка */
+        /* Баннер - Адаптивность без багов */
+        .banner-container { 
+            width: 100%; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            border-radius: 15px; 
+            overflow: hidden; 
+            aspect-ratio: 728 / 90; /* Сохраняет пропорции как на ТВ/ПК */
+            background: #eee;
+            border: 2px solid #feb900;
+        }
+        .banner-slide { 
+            width: 100%; 
+            height: 100%; 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat;
+        }
+        @media (max-width: 640px) {
+            .banner-container { aspect-ratio: 400 / 120; } /* Чуть выше для мобилок, чтобы текст читался */
+        }
+
+        .filter-select { border: 2px solid #feb900; border-radius: 10px; padding: 5px 10px; outline: none; background: white; font-size: 14px; font-weight: bold; }
         .burger-btn { display: flex; flex-direction: column; gap: 4px; cursor: pointer; padding: 5px; }
         .burger-btn span { width: 24px; height: 3px; background: black; border-radius: 2px; }
-
-        .filter-select { border: 2px solid #feb900; border-radius: 10px; padding: 5px 10px; outline: none; background: white; font-size: 14px; }
-
-        /* Баннер 728x90 */
-        .banner-container { width: 100%; max-width: 728px; height: 90px; margin: 0 auto; position: relative; overflow: hidden; border-radius: 8px; }
-        .banner-slide { position: absolute; width: 100%; height: 100%; background-size: contain; background-repeat: no-repeat; background-position: center; background-color: #eee; }
     </style>
 </head>
 <body>
@@ -34,22 +50,31 @@
 
     <div id="ad-modal" class="hidden fixed inset-0 flex items-center justify-center z-[200] p-4 bg-black/40">
         <div class="bg-white border-4 border-[#feb900] rounded-[25px] p-8 max-w-xs text-center shadow-2xl">
-            <h3 class="text-xl font-black mb-4 text-black">מעבר לפרסומת</h3>
-            <p class="text-gray-600 mb-6 font-bold">האם אתה בטוח שברצונך לעבור לקישור הפרסומי?</p>
+            <h3 class="text-xl font-black mb-4 text-black italic">עוברים לטלגרם?</h3>
+            <p class="text-gray-600 mb-6 font-bold">האם ברצונך לעבור לערוץ הרשמי של Jobi?</p>
             <div class="flex gap-2">
-                <a id="ad-link" href="https://t.me/jobi_israel" target="_blank" onclick="closeAdModal()" class="bg-[#feb900] flex-1 py-2 rounded-xl font-black text-center text-black">כן, עבור</a>
-                <button onclick="closeAdModal()" class="bg-gray-200 flex-1 py-2 rounded-xl font-bold text-black">הישאר</button>
+                <a id="ad-link" href="https://t.me/jobi_israel" target="_blank" onclick="closeAdModal()" class="bg-[#feb900] flex-1 py-2 rounded-xl font-black text-center text-black">כן, קח אותי</a>
+                <button onclick="closeAdModal()" class="bg-gray-200 flex-1 py-2 rounded-xl font-bold text-black">ביטול</button>
             </div>
         </div>
     </div>
 
     <div id="side-menu" class="side-menu p-6 text-right flex flex-col">
-        <div class="flex justify-between items-center mb-10">
+        <div class="flex justify-between items-center mb-8">
             <button onclick="toggleMenu(false)" class="text-2xl font-bold">✕</button>
-            <h2 class="text-2xl font-black italic">Jobi Menu</h2>
+            <img src="img/logo.png" class="h-8">
         </div>
-        <nav id="nav-content" class="flex flex-col gap-6 font-bold text-lg">
-        </nav>
+        
+        <div id="user-card-menu" class="hidden mb-6 p-4 bg-gray-50 rounded-2xl border-2 border-[#feb900] flex items-center gap-3">
+            <img id="menu-avatar" src="img/profile.png" class="h-12 w-12 rounded-full border border-black object-cover">
+            <div class="flex flex-col">
+                <span id="menu-username" class="font-black text-sm">שם משתמש</span>
+                <span class="text-[10px] bg-black text-white px-2 py-0.5 rounded-full w-fit">Level 1</span>
+            </div>
+        </div>
+
+        <nav id="nav-content" class="flex flex-col gap-5 font-bold text-lg">
+            </nav>
     </div>
 
     <header class="navbar-jobi p-3 sticky top-0 z-50 shadow-md">
@@ -58,27 +83,24 @@
             <div class="flex items-center gap-2 flex-shrink-0">
                 <img src="img/logo.png" alt="Jobi" class="h-10 w-auto">
                 <div class="flex flex-col leading-tight">
-                    <span class="text-2xl font-black text-black">Jobi</span>
-                    <span id="user-ip" class="text-[10px] text-gray-800 font-mono italic">127.0.0.1</span>
+                    <span class="text-2xl font-black text-black italic">Jobi</span>
+                    <span class="text-[9px] text-gray-800 font-bold opacity-70">מצא את העבודה שלך</span>
                 </div>
             </div>
 
-            <form action="app/func/search.html" method="GET" class="hidden md:flex flex-grow items-center bg-white rounded-full px-4 py-1 max-w-md shadow-sm border-2 border-transparent focus-within:border-black transition">
-                <input type="text" name="q" placeholder="חפש עבודה..." class="w-full py-2 text-right bg-transparent outline-none text-gray-700 font-bold">
-                <button type="submit">
-                    <img src="img/search.png" alt="Search" class="h-5 w-5 opacity-70 hover:opacity-100">
-                </button>
+            <form action="app/func/search.html" method="GET" class="hidden md:flex flex-grow items-center bg-white rounded-full px-4 py-1 max-w-md border-2 border-black/10 focus-within:border-black transition">
+                <input type="text" name="q" placeholder="חפש משרה..." class="w-full py-2 text-right bg-transparent outline-none text-gray-700 font-bold">
+                <button type="submit"><img src="img/search.png" class="h-5 w-5 opacity-60 hover:opacity-100 transition"></button>
             </form>
 
             <div class="flex items-center gap-4">
                 <div class="hidden sm:flex gap-3">
                     <a href="https://t.me/jobi_israel"><img src="img/telegram.png" class="h-7 w-7 hover:scale-110 transition"></a>
-                    <a href="https://www.linkedin.com/in/sviatoslav-burnashov-360b42350"><img src="img/linkedin.png" class="h-7 w-7 hover:scale-110 transition"></a>
                 </div>
                 
-                <div class="flex items-center gap-2 bg-white/20 p-1 pr-3 rounded-full border border-white/30">
+                <div class="flex items-center gap-2 bg-white/30 p-1 pr-3 rounded-full border border-white/40">
                     <a href="app/profile.html">
-                        <img src="img/profile.png" alt="Profile" class="h-9 w-9 rounded-full border-2 border-white">
+                        <img id="nav-avatar" src="img/profile.png" alt="Profile" class="h-9 w-9 rounded-full border-2 border-white object-cover">
                     </a>
                     <div class="burger-btn" onclick="toggleMenu(true)">
                         <span></span><span></span><span></span>
@@ -95,21 +117,18 @@
         </div>
 
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 border-b-4 border-[#feb900] pb-4">
-            <h2 class="text-3xl font-black">משרות זמינות</h2>
+            <h2 class="text-3xl font-black italic">משרות בשבילך ✨</h2>
             
-            <div class="flex flex-wrap gap-2 items-center bg-white/50 p-3 rounded-2xl shadow-inner">
-                <img src="img/filter.png" class="h-5 w-5 ml-2">
-                <select id="f-city" class="filter-select"><option>עיר...</option><option>תל אביב</option><option>באר שבע</option></select>
+            <div class="flex flex-wrap gap-2 items-center bg-white/60 p-2 rounded-xl shadow-sm">
+                <img src="img/filter.png" class="h-4 w-4 ml-2">
+                <select id="f-city" class="filter-select"><option>כל הארץ</option><option>תל אביב</option><option>באר שבע</option></select>
                 <select id="f-lang" class="filter-select">
                     <option>שפה...</option>
                     <option>עברית</option>
                     <option>רוסית</option>
-                    <option>ערבית</option>
-                    <option>פורטוגזית</option>
-                    <option>הכל</option>
+                    <option>אנגלית</option>
                 </select>
-                <input type="number" id="f-salary" placeholder="שכר (שח)" class="filter-select w-28">
-                <select id="f-rate" class="filter-select"><option>דירוג...</option><option>4+ ⭐</option></select>
+                <select id="f-rate" class="filter-select"><option>דירוג ⭐</option><option>4.5+</option></select>
             </div>
         </div>
 
@@ -118,7 +137,6 @@
     </main>
 
     <script type="module">
-        // --- ЛОГИКА МЕНЮ ---
         window.toggleMenu = (open) => {
             document.getElementById('side-menu').classList.toggle('active', open);
             document.getElementById('overlay').style.display = open ? 'block' : 'none';
@@ -127,56 +145,45 @@
         function renderNav() {
             const user = JSON.parse(localStorage.getItem('jobi_user'));
             const nav = document.getElementById('nav-content');
-            
-            // HTML поиска для мобильной версии (внутри меню)
-            const mobileSearch = `
-                <div class="md:hidden mb-4">
-                    <form action="app/func/search.html" method="GET" class="flex items-center bg-gray-100 rounded-xl px-4 py-2 border-2 border-[#feb900]">
-                        <input type="text" name="q" placeholder="חפש עבודה..." class="w-full text-right bg-transparent outline-none">
-                        <button type="submit"><img src="img/search.png" class="h-5 w-5 opacity-50"></button>
-                    </form>
-                </div>
-            `;
-
-            // HTML соцсетей для мобильной версии
-            const mobileSocials = `
-                <div class="md:hidden flex justify-center gap-6 mt-6 border-t pt-6">
-                    <a href="#"><img src="img/telegram.png" class="h-8 w-8"></a>
-                    <a href="#"><img src="img/linkedin.png" class="h-8 w-8"></a>
-                </div>
-            `;
+            const userCard = document.getElementById('user-card-menu');
             
             if (user) {
+                // Настраиваем карточку пользователя в меню
+                userCard.classList.remove('hidden');
+                document.getElementById('menu-username').textContent = user.firstName + " " + (user.lastName || "");
+                if(user.avatar) {
+                    document.getElementById('menu-avatar').src = user.avatar;
+                    document.getElementById('nav-avatar').src = user.avatar;
+                }
+
                 nav.innerHTML = `
-                    ${mobileSearch}
-                    <a href="app/profile.html" class="hover:text-[#feb900]">👤 פרופיל</a>
-                    <a href="app/settings.html" class="hover:text-[#feb900]">⚙️ הגדרות</a>
-                    <a href="app/my-jobs.html" class="hover:text-[#feb900]">💼 המשרות שלי</a>
-                    <a href="app/chat.html" class="hover:text-[#feb900]">💬 צ'אט</a>
-                    <a href="app/support.html" class="hover:text-[#feb900]">🎧 תמיכה טכנית</a>
-                    <button onclick="localStorage.clear(); location.reload();" class="text-red-500 mt-10 text-right">יציאה מהחשבון</button>
-                    ${mobileSocials}
+                    <a href="app/profile.html" class="hover:text-[#feb900] transition-colors">👤 הפרופיל שלי</a>
+                    <a href="app/my-jobs.html" class="hover:text-[#feb900] transition-colors">💼 המשרות שלי</a>
+                    <a href="app/chat.html" class="hover:text-[#feb900] transition-colors">💬 הודעות</a>
+                    <a href="app/settings.html" class="hover:text-[#feb900] transition-colors text-sm text-gray-400 mt-4">⚙️ הגדרות חשבון</a>
+                    <button onclick="logout()" class="text-red-500 mt-6 text-right font-black">יציאה מהחשבון</button>
                 `;
             } else {
+                userCard.classList.add('hidden');
                 nav.innerHTML = `
-                    ${mobileSearch}
-                    <p class="text-sm text-gray-500 mb-4 font-normal italic">נראה שעוד לא נרשמת...</p>
-                    <a href="account/login.html" class="bg-[#feb900] text-center p-3 rounded-xl text-black">התחברות</a>
-                    <a href="account/register.html" class="border-2 border-[#feb900] text-center p-3 rounded-xl text-black">הרшמה</a>
-                    <a href="app/support.html" class="mt-10">🎧 תמיכה טכנית</a>
-                    ${mobileSocials}
+                    <p class="text-sm text-gray-500 mb-2 font-normal italic">היי, אורח!</p>
+                    <a href="account/login.html" class="bg-[#feb900] text-center p-3 rounded-2xl text-black shadow-md">התחברות</a>
+                    <a href="account/register.html" class="border-2 border-[#feb900] text-center p-3 rounded-2xl text-black">הרשמה ל-Jobi</a>
                 `;
             }
         }
 
-        // --- РЕКЛАМА ---
+        window.logout = () => {
+            localStorage.clear();
+            location.reload();
+        };
+
         window.openAdModal = (url) => {
             document.getElementById('ad-link').href = url;
             document.getElementById('ad-modal').classList.remove('hidden');
         };
         window.closeAdModal = () => document.getElementById('ad-modal').classList.add('hidden');
 
-        // Инициализация
         renderNav();
     </script>
 </body>
