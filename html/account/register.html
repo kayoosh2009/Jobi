@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הרשמה ל-Jobi</title>
+    <link rel="icon" type="image/png" href="../img/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #fefff1; font-family: 'Heebo', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .register-card { background: white; border: 2px solid #feb900; border-radius: 30px; box-shadow: 0 10px 25px rgba(254, 185, 0, 0.1); overflow: hidden; }
+        .input-field { border: 2px solid #feb900; border-radius: 12px; outline: none; transition: 0.3s; padding: 10px; width: 100%; text-align: right; }
+        .input-field:focus { box-shadow: 0 0 8px rgba(254, 185, 0, 0.4); }
+        .btn-primary { background-color: #feb900; transition: 0.3s; font-weight: 900; }
+        .btn-primary:hover { background-color: #e5a700; transform: translateY(-2px); }
+        
+        /* Стили для загрузки фото */
+        .banner-upload { width: 100%; height: 100px; background: #f3f4f6; position: relative; border-bottom: 2px solid #feb900; cursor: pointer; overflow: hidden; }
+        .avatar-upload { width: 80px; height: 80px; background: white; border: 3px solid #feb900; border-radius: 50%; position: absolute; bottom: -40px; right: 20px; z-index: 10; cursor: pointer; overflow: hidden; }
+        .preview-img { width: 100%; height: 100%; object-fit: cover; }
+        
+        #custom-alert { transition: all 0.3s ease; }
+        .modal-content { border: 3px solid #feb900; border-radius: 25px; background: #fefff1; transform: scale(0.9); transition: 0.3s ease; }
+        #custom-alert:not(.hidden) .modal-content { transform: scale(1); }
+    </style>
+</head>
+<body class="p-4">
+
+    <div id="custom-alert" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6 text-center">
+        <div class="modal-content w-full max-w-xs p-8 shadow-2xl">
+            <img id="alert-img" src="../img/logo_reverse.png" class="h-20 mx-auto mb-4 object-contain">
+            <h3 id="alert-title" class="text-xl font-black mb-2 text-gray-900"></h3>
+            <p id="alert-text" class="text-gray-600 mb-6"></p>
+            <button onclick="closeAlert()" class="btn-primary w-full py-2 rounded-xl text-black">אוקיי</button>
+        </div>
+    </div>
+
+    <div class="register-card w-full max-w-lg">
+        <div class="relative mb-12">
+            <div class="banner-upload" onclick="document.getElementById('banner-input').click()">
+                <img id="banner-preview" src="" class="preview-img hidden">
+                <div id="banner-placeholder" class="flex items-center justify-center h-full text-gray-400 text-xs font-bold">לחץ להוספת תמונת רקע</div>
+            </div>
+            <div class="avatar-upload" onclick="document.getElementById('avatar-input').click()">
+                <img id="avatar-preview" src="../img/default-avatar.png" class="preview-img">
+            </div>
+            <input type="file" id="banner-input" class="hidden" accept="image/*" onchange="previewImage(this, 'banner-preview', 'banner-placeholder')">
+            <input type="file" id="avatar-input" class="hidden" accept="image/*" onchange="previewImage(this, 'avatar-preview')">
+        </div>
+
+        <form id="register-form" class="px-8 pb-8 space-y-4">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-black text-gray-900">יצירת פרופיל חדש</h1>
+                <p class="text-gray-500 text-xs italic">הצטרף לקהילת Jobi ומצא עבודה בקלות</p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold mb-1 mr-1">שם מלא</label>
+                    <input type="text" id="fullName" required class="input-field" placeholder="ישראל ישראלי">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1 mr-1">שם משתמש</label>
+                    <input type="text" id="nickname" required class="input-field" placeholder="israel123">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-bold mb-1 mr-1">תאריך לידה</label>
+                    <input type="date" id="birthDate" required class="input-field text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold mb-1 mr-1">עיר מגורים</label>
+                    <select id="city" required class="input-field text-sm">
+                        <option value="">בחר עיר...</option>
+                        <option value="Beersheba">באר שבע</option>
+                        <option value="Tel Aviv">תל אביב</option>
+                        <option value="Jerusalem">ירושלים</option>
+                        <option value="Haifa">חיפה</option>
+                        <option value="Ashdod">אשדוד</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold mb-1 mr-1">אימייל</label>
+                <input type="email" id="email" required class="input-field" placeholder="mail@example.com">
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold mb-1 mr-1">סיסמה</label>
+                <input type="password" id="password" required class="input-field" placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn-primary w-full py-3 rounded-xl text-lg shadow-md mt-4">הירשם עכשיו</button>
+            
+            <p class="text-center text-sm text-gray-600 mt-4">
+                כבר יש לך חשבון? <a href="login.html" class="text-orange-600 font-bold hover:underline">התחבר כאן</a>
+            </p>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDA9KfdcE2acdeSgkfRVS_KiX1eBBrR1Ao",
+            authDomain: "jobi-il.firebaseapp.com",
+            projectId: "jobi-il",
+            storageBucket: "jobi-il.firebasestorage.app",
+            messagingSenderId: "1049483275681",
+            appId: "1:1049483275681:web:ef9bb3c9343aa0939d6fe0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        window.previewImage = (input, imgId, placeholderId) => {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.getElementById(imgId);
+                    img.src = e.target.result;
+                    img.classList.remove('hidden');
+                    if (placeholderId) document.getElementById(placeholderId).classList.add('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        };
+
+        document.getElementById('register-form').onsubmit = async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const fullName = document.getElementById('fullName').value;
+            const nickname = document.getElementById('nickname').value;
+            const city = document.getElementById('city').value;
+            const birthDate = document.getElementById('birthDate').value;
+
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+
+                await setDoc(doc(db, "users", user.uid), {
+                    fullName, nickname, city, birthDate, xp: 0, level: 1,
+                    avatar: document.getElementById('avatar-preview').src,
+                    banner: document.getElementById('banner-preview').src
+                });
+
+                localStorage.setItem('jobi_user', JSON.stringify({
+                    firstName: fullName.split(' ')[0],
+                    avatar: document.getElementById('avatar-preview').src,
+                    age: calculateAge(birthDate)
+                }));
+
+                showModal("מעולה!", "נרשמת בהצלחה ל-Jobi", "success");
+                setTimeout(() => window.location.href = '../profile.html', 1500);
+            } catch (error) {
+                showModal("אופס!", "ההרשמה נכשלה: " + error.message, "error");
+            }
+        };
+
+        function calculateAge(date) {
+            const diff = Date.now() - new Date(date).getTime();
+            return Math.abs(new Date(diff).getUTCFullYear() - 1970);
+        }
+
+        window.showModal = (title, text, type) => {
+            document.getElementById('alert-title').textContent = title;
+            document.getElementById('alert-text').textContent = text;
+            document.getElementById('alert-img').src = type === 'error' ? '../img/error.png' : '../img/logo.png';
+            document.getElementById('custom-alert').classList.remove('hidden');
+        };
+
+        window.closeAlert = () => document.getElementById('custom-alert').classList.add('hidden');
+    </script>
+</body>
+</html>
