@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ניהול עסק — Jobi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { background-color: #fefff1; font-family: 'Heebo', sans-serif; }
+        .nav-biz { background: black; color: white; }
+    </style>
+</head>
+<body>
+    <nav class="nav-biz p-4 flex justify-between items-center shadow-xl">
+        <h1 class="text-xl font-black">Jobi <span class="text-[#feb900]">Business Panel</span></h1>
+        <button onclick="logout()" class="text-sm font-bold border-2 border-[#feb900] px-3 py-1 rounded-lg">יציאה</button>
+    </nav>
+
+    <main class="container mx-auto p-6">
+        <div class="bg-white rounded-3xl p-8 border-2 border-black shadow-[8px_8px_0px_#feb900] mb-8">
+            <h2 class="text-2xl font-black mb-4">שלום, <span id="biz-name">בעל עסק</span> 👋</h2>
+            <p class="text-gray-600 font-bold italic text-sm">כאן תוכל לנהל את המשרות שפרסמת ולראות פניות ממועמדים.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-white p-6 rounded-2xl border-2 border-black">
+                <h3 class="font-black text-lg mb-4">המשרות הפעילות שלי</h3>
+                <div id="my-jobs" class="text-gray-400 italic text-sm text-center py-10">טוען נתונים...</div>
+            </div>
+            
+            <div class="bg-white p-6 rounded-2xl border-2 border-black">
+                <h3 class="font-black text-lg mb-4">פניות חדשות</h3>
+                <div class="text-gray-400 italic text-sm text-center py-10">אין פניות חדשות כרגע</div>
+            </div>
+        </div>
+    </main>
+
+    <script type="module">
+        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
+        // Здесь инициализация Firebase (как в логине)
+        
+        const auth = getAuth();
+        onAuthStateChanged(auth, (user) => {
+            if (!user || !user.email.endsWith('@jobi.israel')) {
+                window.location.href = 'login.html';
+            }
+        });
+
+        window.logout = () => {
+            signOut(auth).then(() => {
+                localStorage.clear();
+                window.location.href = 'login.html';
+            });
+        };
+    </script>
+</body>
+</html>
