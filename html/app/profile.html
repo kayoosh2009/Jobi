@@ -5,27 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>פרופיל Jobi</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" type="image/png" href="../../img/logo.png">
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { background-color: #fefff1; font-family: 'Heebo', sans-serif; color: #333; }
-        .navbar-jobi { background-color: #feb900; }
-        
-        /* Карточки в стиле Jobi (как на главной) */
-        .jobi-card { background: white; border: 2px solid #feb900; border-radius: 25px; box-shadow: 0 4px 15px rgba(254, 185, 0, 0.1); }
-        .stat-badge { background: #fefff1; border: 1px solid #feb900; border-radius: 15px; transition: 0.3s; }
-        
-        /* XP Bar */
-        .xp-bar-bg { background: #eee; height: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; }
-        .xp-bar-fill { background: linear-gradient(90deg, #feb900, #ff8c00); height: 100%; transition: width 1s ease; }
-
-        /* Меню (1 в 1 как на главной) */
-        .side-menu { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: white; z-index: 100; transition: 0.4s; border-right: 3px solid #feb900; }
-        .side-menu.active { left: 0; }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 90; backdrop-filter: blur(2px); }
-        
-        .burger-btn { display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
-        .burger-btn span { width: 24px; height: 3px; background: black; border-radius: 2px; }
-    </style>
+    <link rel="stylesheet" href="../../css/profile.css">
 </head>
 <body class="pb-10">
 
@@ -34,7 +16,7 @@
     <div id="side-menu" class="side-menu p-6 text-right flex flex-col">
         <div class="flex justify-between items-center mb-8">
             <button onclick="toggleMenu(false)" class="text-2xl font-bold">✕</button>
-            <img src="../img/logo.png" class="h-8">
+            <img src="../../img/logo.png" class="h-8">
         </div>
         <nav id="nav-content" class="flex flex-col gap-5 font-bold text-lg">
             </nav>
@@ -43,7 +25,7 @@
     <header class="navbar-jobi p-3 sticky top-0 z-50 shadow-md">
         <div class="container mx-auto flex items-center justify-between gap-4">
             <div class="flex items-center gap-2">
-                <img src="../img/logo.png" alt="Jobi" class="h-10">
+                <img src="../../img/logo.png" alt="Jobi" class="h-10">
                 <div class="flex flex-col leading-tight">
                     <span class="text-2xl font-black italic">Jobi</span>
                     <span class="text-[9px] font-bold opacity-70">פרופיל אישי</span>
@@ -51,7 +33,7 @@
             </div>
 
             <div class="flex items-center gap-4">
-                <a href="../index.html" class="bg-white/40 px-3 py-1 rounded-full text-sm font-bold border border-white/50 hover:bg-white/60 transition">חזרה לבית</a>
+                <a href="../../index.html" class="bg-white/40 px-3 py-1 rounded-full text-sm font-bold border border-white/50 hover:bg-white/60 transition">חזרה לבית</a>
                 <div class="burger-btn" onclick="toggleMenu(true)">
                     <span></span><span></span><span></span>
                 </div>
@@ -63,7 +45,7 @@
         <div class="jobi-card p-6 md:p-10 mb-8">
             <div class="flex flex-col md:flex-row items-center gap-8">
                 <div class="relative">
-                    <img id="user-avatar" src="../img/profile.png" class="w-32 h-32 rounded-full border-4 border-[#feb900] object-cover shadow-md">
+                    <img id="user-avatar" src="../../img/profile.png" class="w-32 h-32 rounded-full border-4 border-[#feb900] object-cover shadow-md">
                     <div id="level-tag" class="absolute -bottom-2 -right-2 bg-black text-[#feb900] px-3 py-1 rounded-full font-black text-sm border-2 border-[#feb900]">LVL 1</div>
                 </div>
                 
@@ -128,53 +110,6 @@
         </div>
     </main>
 
-    <script>
-        // Загрузка данных
-        document.addEventListener('DOMContentLoaded', () => {
-            const user = JSON.parse(localStorage.getItem('jobi_user'));
-            if (!user) {
-                window.location.href = '../account/login.html';
-                return;
-            }
-
-            // Заполнение полей
-            document.getElementById('user-name').textContent = `${user.firstName} ${user.lastName}`;
-            document.getElementById('user-age').textContent = `גיל: ${user.age || '--'}`;
-            if(user.avatar) document.getElementById('user-avatar').src = user.avatar;
-
-            // Логика XP
-            const xp = parseInt(localStorage.getItem('jobi_xp')) || 0;
-            const level = Math.floor(xp / 100) + 1;
-            const currentXP = xp % 100;
-
-            document.getElementById('level-tag').textContent = `LVL ${level}`;
-            document.getElementById('xp-current').textContent = currentXP;
-            document.getElementById('xp-fill').style.width = `${currentXP}%`;
-
-            renderNav(user);
-        });
-
-        function toggleMenu(open) {
-            document.getElementById('side-menu').classList.toggle('active', open);
-            document.getElementById('overlay').style.display = open ? 'block' : 'none';
-        }
-
-        function renderNav(user) {
-            const nav = document.getElementById('nav-content');
-            nav.innerHTML = `
-                <a href="../index.html">🏠 דף הבית</a>
-                <a href="my-jobs.html">💼 המשרות שלי</a>
-                <a href="chat.html">💬 הודעות</a>
-                <a href="settings.html">⚙️ הגדרות חשבון</a>
-                <hr class="border-gray-100">
-                <button onclick="logout()" class="text-red-500 text-right font-black">יציאה מהחשבון</button>
-            `;
-        }
-
-        function logout() {
-            localStorage.clear();
-            window.location.href = '../account/login.html';
-        }
-    </script>
+    <script src="../../js/profile.js"></script>
 </body>
 </html>
