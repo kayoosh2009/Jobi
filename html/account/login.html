@@ -4,28 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>כניסה ל-Jobi</title>
-    <link rel="icon" type="image/png" href="../img/logo.png">
+    <link rel="icon" type="image/png" href="../../img/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
-    <style>
-        body { background-color: #fefff1; font-family: 'Heebo', sans-serif; min-height: 100vh; display: flex; align-items: center; justify-content: center; }
-        .login-card { background: white; border: 2px solid #feb900; border-radius: 30px; box-shadow: 0 10px 25px rgba(254, 185, 0, 0.1); }
-        .input-field { border: 2px solid #feb900; border-radius: 12px; outline: none; transition: 0.3s; padding: 12px; }
-        .input-field:focus { box-shadow: 0 0 8px rgba(254, 185, 0, 0.4); }
-        .btn-primary { background-color: #feb900; transition: 0.3s; font-weight: 900; }
-        .btn-primary:hover { background-color: #e5a700; transform: translateY(-2px); }
-        
-        /* Стили для красивого модального окна */
-        #custom-alert { transition: all 0.3s ease; }
-        .modal-content { border: 3px solid #feb900; border-radius: 25px; background: #fefff1; transform: scale(0.9); transition: 0.3s ease; }
-        #custom-alert:not(.hidden) .modal-content { transform: scale(1); }
-    </style>
+    <link rel="stylesheet" href="../../css/login.css">
 </head>
 <body class="p-4">
 
     <div id="custom-alert" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-6">
         <div class="modal-content w-full max-w-xs p-8 shadow-2xl text-center">
-            <img id="alert-img" src="../img/logo_reverse.png" class="h-20 mx-auto mb-4 object-contain">
+            <img id="alert-img" src="../../img/logo_reverse.png" class="h-20 mx-auto mb-4 object-contain">
             <h3 id="alert-title" class="text-xl font-black mb-2 text-gray-900">כותרת</h3>
             <p id="alert-text" class="text-gray-600 mb-6">הודעה כאן...</p>
             <button id="alert-btn" onclick="closeAlert()" class="btn-primary w-full py-2 rounded-xl text-black">אוקיי</button>
@@ -46,7 +34,7 @@
 
     <div class="login-card w-full max-w-md p-8">
         <div class="text-center mb-8">
-            <img src="../img/logo_reverse.png" alt="Jobi" class="h-16 mx-auto mb-3">
+            <img src="../../img/logo_reverse.png" alt="Jobi" class="h-16 mx-auto mb-3">
             <h1 class="text-3xl font-black text-gray-900 leading-none">Jobi</h1>
             <p class="text-gray-500 text-sm mt-2 italic">הדרך שלך לעבודה ראשונה</p>
         </div>
@@ -72,7 +60,7 @@
         </div>
 
         <button id="google-login-btn" type="button" class="w-full flex items-center justify-center gap-3 border-2 border-gray-100 py-3 rounded-xl hover:bg-gray-50 transition font-bold text-gray-700">
-            <img src="../img/google.png" alt="Google" class="w-5 h-5">
+            <img src="../../img/google.png" alt="Google" class="w-5 h-5">
             התחברות עם Google
         </button>
 
@@ -81,87 +69,6 @@
         </p>
     </div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, sendPasswordResetEmail, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-auth.js";
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyDA9KfdcE2acdeSgkfRVS_KiX1eBBrR1Ao",
-            authDomain: "jobi-il.firebaseapp.com",
-            projectId: "jobi-il",
-            storageBucket: "jobi-il.firebasestorage.app",
-            messagingSenderId: "1049483275681",
-            appId: "1:1049483275681:web:ef9bb3c9343aa0939d6fe0"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-
-        // ФУНКЦИЯ ПОКАЗА КРАСИВОГО АЛЕРТА
-        window.showAlert = (title, text, type = 'success') => {
-            document.getElementById('alert-title').textContent = title;
-            document.getElementById('alert-text').textContent = text;
-            document.getElementById('alert-img').src = (type === 'error') ? '../img/error.png' : '../img/logo.png';
-            document.getElementById('custom-alert').classList.remove('hidden');
-        };
-
-        window.closeAlert = () => {
-            document.getElementById('custom-alert').classList.add('hidden');
-        };
-
-        window.toggleModal = (id, show) => {
-            document.getElementById(id).classList.toggle('hidden', !show);
-        };
-
-        // Вход через Google
-        document.getElementById('google-login-btn').onclick = async () => {
-            try {
-                const result = await signInWithPopup(auth, provider);
-                showAlert("ברוכים הבאים!", "התחברת בהצלחה עם Google");
-                setTimeout(() => {
-                    localStorage.setItem('jobi_user', JSON.stringify({
-                        firstName: result.user.displayName.split(' ')[0],
-                        lastName: result.user.displayName.split(' ')[1] || "",
-                        avatar: result.user.photoURL,
-                        age: "16"
-                    }));
-                    window.location.href = '../app/profile.html';
-                }, 1500);
-            } catch (error) {
-                showAlert("שגיאה", "לא הצלחנו לחבר אותך עם Google", "error");
-            }
-        };
-
-        // Восстановление пароля
-        window.sendResetEmail = async () => {
-            const email = document.getElementById('reset-email').value;
-            if (!email) {
-                showAlert("אופס", "צריך להכניס אימייל קודם", "error");
-                return;
-            }
-            try {
-                await sendPasswordResetEmail(auth, email);
-                toggleModal('reset-modal', false);
-                showAlert("נשלח!", "בדוק את תיבת המייל שלך (גם בספאם)");
-            } catch (error) {
-                showAlert("שגיאה", "המייל לא קיים במערכת", "error");
-            }
-        };
-
-        // Обычный вход (форма)
-        document.getElementById('login-form').onsubmit = async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value;
-            const password = document.getElementById('password').value;
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                showAlert("מעולה!", "נכנסת למערכת בהצלחה");
-                setTimeout(() => window.location.href = '../app/profile.html', 1500);
-            } catch (error) {
-                showAlert("כניסה נכשלה", "אימייל או סיסמה לא נכונים", "error");
-            }
-        };
-    </script>
+    <script type="module" src="../../js/login.js"></script>
 </body>
 </html>
