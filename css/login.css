@@ -1,0 +1,55 @@
+body {
+  background-color: #fefff1;
+  font-family: 'Heebo', sans-serif;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-card {
+  background: white;
+  border: 2px solid #feb900;
+  border-radius: 30px;
+  box-shadow: 0 10px 25px rgba(254, 185, 0, 0.1);
+}
+
+.input-field {
+  border: 2px solid #feb900;
+  border-radius: 12px;
+  outline: none;
+  transition: 0.3s;
+  padding: 12px;
+}
+
+.input-field:focus {
+  box-shadow: 0 0 8px rgba(254, 185, 0, 0.4);
+}
+
+.btn-primary {
+  background-color: #feb900;
+  transition: 0.3s;
+  font-weight: 900;
+}
+
+.btn-primary:hover {
+  background-color: #e5a700;
+  transform: translateY(-2px);
+}
+
+/* Стили для красивого модального окна */
+#custom-alert {
+  transition: all 0.3s ease;
+}
+
+.modal-content {
+  border: 3px solid #feb900;
+  border-radius: 25px;
+  background: #fefff1;
+  transform: scale(0.9);
+  transition: 0.3s ease;
+}
+
+#custom-alert:not(.hidden) .modal-content {
+  transform: scale(1);
+}

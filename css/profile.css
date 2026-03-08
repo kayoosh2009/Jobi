@@ -1,0 +1,18 @@
+body { background-color: #fefff1; font-family: 'Heebo', sans-serif; color: #333; }
+        .navbar-jobi { background-color: #feb900; }
+        
+/* Карточки в стиле Jobi (как на главной) */
+.jobi-card { background: white; border: 2px solid #feb900; border-radius: 25px; box-shadow: 0 4px 15px rgba(254, 185, 0, 0.1); }
+.stat-badge { background: #fefff1; border: 1px solid #feb900; border-radius: 15px; transition: 0.3s; }
+        
+/* XP Bar */
+.xp-bar-bg { background: #eee; height: 12px; border-radius: 10px; overflow: hidden; border: 1px solid #ddd; }
+.xp-bar-fill { background: linear-gradient(90deg, #feb900, #ff8c00); height: 100%; transition: width 1s ease; }
+
+/* Меню (1 в 1 как на главной) */
+.side-menu { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: white; z-index: 100; transition: 0.4s; border-right: 3px solid #feb900; }
+.side-menu.active { left: 0; }
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); display: none; z-index: 90; backdrop-filter: blur(2px); }
+        
+.burger-btn { display: flex; flex-direction: column; gap: 4px; cursor: pointer; }
+.burger-btn span { width: 24px; height: 3px; background: black; border-radius: 2px; }
