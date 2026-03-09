@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobi — עבודות לנוער</title>
+    <link rel="icon" type="image/png" href="img/logo.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Heebo', sans-serif; background-color: #ffffff; }
+        .yellow-gradient { background: linear-gradient(135deg, #FFD700 0%, #feb900 100%); }
+        .job-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 3px solid transparent; }
+        .job-card:hover { transform: translateY(-10px); border-color: #feb900; box-shadow: 0 20px 25px -5px rgba(254, 185, 0, 0.2); }
+        .filter-select { background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 8px 16px; font-weight: 700; outline: none; transition: 0.2s; }
+        .filter-select:focus { border-color: #feb900; }
+        .burger-line { width: 24px; height: 3px; background-color: black; margin: 4px 0; border-radius: 2px; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+    <header class="bg-[#FFD700] p-4 sticky top-0 z-50 shadow-lg border-b-4 border-black">
+        <div class="container mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <img src="img/logo.png" alt="Jobi" class="h-12 w-12 drop-shadow-md">
+                <div class="flex flex-col leading-tight">
+                    <span class="text-3xl font-black italic tracking-tighter text-black">Jobi</span>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-black/70">עבודות לנוער</span>
+                </div>
+            </div>
+
+            <div class="hidden md:flex flex-1 max-w-md mx-8">
+                <div class="relative w-full flex items-center bg-white rounded-full border-2 border-black px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    <input type="text" id="searchInput" placeholder="חפש עבודה חלומית..." class="w-full bg-transparent outline-none font-bold pr-2 text-right">
+                    <img src="img/search.png" alt="Search" class="h-5 w-5 cursor-pointer hover:scale-110 transition" onclick="handleSearch()">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4">
+                <div id="userMenuBtn" class="cursor-pointer group bg-white p-2 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none transition-all">
+                    <div class="burger-line"></div>
+                    <div class="burger-line"></div>
+                    <div class="burger-line"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div id="sideMenu" class="fixed inset-0 bg-black/50 z-[60] hidden backdrop-blur-sm">
+        <div class="absolute left-0 top-0 h-full w-72 bg-white border-r-4 border-black p-6 transition-transform">
+            <button onclick="toggleMenu()" class="text-2xl font-black mb-8">✕ סגור</button>
+            <nav id="menuContent" class="flex flex-col gap-4 font-black text-xl italic">
+                </nav>
+        </div>
+    </div>
+
+    <main class="container mx-auto px-4 py-8">
+        
+        <div onclick="window.location.href='https://t.me/jobi_israel'" class="group relative overflow-hidden rounded-3xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-12 cursor-pointer transition-all active:scale-95">
+            <img src="img/banner.png" alt="Telegram" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
+                <span class="text-white text-2xl font-black">הצטרפו לקהילת הטלגרם שלנו 🚀</span>
+            </div>
+        </div>
+
+        <div class="flex flex-wrap gap-4 mb-10 items-center justify-between border-b-4 border-[#FFD700] pb-6">
+            <div class="flex flex-col">
+                <h2 class="text-4xl font-black italic text-black tracking-tighter">משרות חמות 🔥</h2>
+                <p class="font-bold text-gray-500">מצא את הכסף הגדול שלך</p>
+            </div>
+            
+            <div class="flex gap-3 flex-wrap">
+                <select id="filter-city" class="filter-select border-2 border-black shadow-[4px_4px_0px_0px_rgba(255,215,0,1)]">
+                    <option value="">כל הארץ</option>
+                    <option value="Tel Aviv">תל אביב</option>
+                    <option value="Haifa">חיפה</option>
+                    <option value="Jerusalem">ירושלים</option>
+                    <option value="Ashdod">אשדוד</option>
+                    <option value="Beersheba">באר שבע</option>
+                </select>
+
+                <select id="filter-age" class="filter-select border-2 border-black shadow-[4px_4px_0px_0px_rgba(255,215,0,1)]">
+                    <option value="">גיל</option>
+                    <option value="14">14+</option>
+                    <option value="16">16+</option>
+                    <option value="18">18+</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="jobs-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="../js/main.js"></script>
+</body>
+</html>

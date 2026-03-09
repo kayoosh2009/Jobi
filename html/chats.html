@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobi — צ'אטים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Heebo', sans-serif; background-color: #f0f0f0; height: 100vh; overflow: hidden; }
+        .neo-card { background: white; border-right: 4px solid black; height: 100vh; display: flex; flex-direction: column; }
+        .chat-item { border-bottom: 2px solid black; transition: 0.2s; cursor: pointer; background: white; }
+        .chat-item:hover { background-color: #fffbeb; }
+        .chat-item.active { background-color: #FFD700; }
+        .search-results-box { 
+            position: absolute; top: 100%; left: 0; right: 0; 
+            background: white; border: 4px solid black; border-top: none;
+            z-index: 50; max-height: 300px; overflow-y: auto;
+            box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+        }
+    </style>
+</head>
+<body class="flex">
+
+    <aside class="w-full md:w-[450px] neo-card">
+        <div class="p-6 border-b-4 border-black sticky top-0 bg-white z-20">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-3xl font-black italic tracking-tighter uppercase">הודעות</h1>
+                <a href="main.html" class="bg-white border-2 border-black p-2 rounded-xl shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-0.5">🏠</a>
+            </div>
+            
+            <div class="relative">
+                <input type="text" id="user-search" placeholder="חפש משתמשים..." 
+                       class="w-full p-4 border-4 border-black rounded-2xl font-bold outline-none shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus:shadow-none transition-all">
+                <div id="search-results" class="search-results-box hidden"></div>
+            </div>
+        </div>
+
+        <div id="chats-list" class="flex-1 overflow-y-auto bg-gray-50">
+            <div class="p-10 text-center opacity-40 font-bold">טוען צ'אטים...</div>
+        </div>
+    </aside>
+
+    <main class="hidden md:block flex-1 bg-[#e5e7eb] relative">
+        <iframe id="messenger-frame" src="about:blank" class="w-full h-full border-none"></iframe>
+    </aside>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, query, where, onSnapshot, orderBy, doc, setDoc, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ТВОЙ КОНФИГ (оставил как в предыдущих файлах)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDA9KfdcE2acdeSgkfRVS_KiX1eBBrR1Ao",
+            authDomain: "jobi-il.firebaseapp.com",
+            projectId: "jobi-il",
+            appId: "1:1049483275681:web:ef9bb3c9343aa0939d6fe0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const myId = localStorage.getItem('user_id');
+
+        if (!myId) window.location.href = 'login.html';
+
+        // 1. Инициализация чата "Заметки" (Notes)
+        async function initNotes() {
+            const noteChatId = `notes_${myId}`;
+            const noteRef = doc(db, "chats", noteChatId);
+            const snap = await getDoc(noteRef);
+            
+            if (!snap.exists()) {
+                await setDoc(noteRef, {
+                    users: [myId],
+                    isNotes: true,
+                    lastMessage: "הערות אישיות שלי 📝",
+                    lastUpdate: Date.now(),
+                    names: { [myId]: "Заметки / הערות" }
+                });
+            }
+        }
+
+        // 2. Реальное время: Список последних диалогов
+        function listenToChats() {
+            const q = query(
+                collection(db, "chats"), 
+                where("users", "array-contains", myId),
+                orderBy("lastUpdate", "desc")
+            );
+
+            onSnapshot(q, (snapshot) => {
+                const list = document.getElementById('chats-list');
+                list.innerHTML = '';
+                
+                if (snapshot.empty) {
+                    list.innerHTML = '<div class="p-10 text-center font-bold opacity-30 italic text-xl uppercase">אין צ\'אטים פעילים</div>';
+                }
+
+                snapshot.forEach(chatDoc => {
+                    const chat = chatDoc.data();
+                    const chatId = chatDoc.id;
+                    const isNotes = chat.isNotes || false;
+                    
+                    // Находим имя собеседника
+                    let displayName = "משתמש";
+                    if (isNotes) {
+                        displayName = "הערות שלי";
+                    } else {
+                        // Если в чате сохранены имена, берем не свое
+                        const otherId = chat.users.find(id => id !== myId);
+                        displayName = (chat.names && chat.names[otherId]) ? chat.names[otherId] : "משתמש Jobi";
+                    }
+
+                    const time = chat.lastUpdate ? new Date(chat.lastUpdate).toLocaleTimeString('he-IL', {hour: '2-digit', minute:'2-digit'}) : '';
+
+                    list.innerHTML += `
+                        <div class="chat-item p-5 flex items-center gap-4 border-b-2 border-black" onclick="openChat('${chatId}')">
+                            <div class="relative">
+                                <img src="${isNotes ? 'img/logo.png' : 'img/profile.png'}" class="w-16 h-16 rounded-2xl border-2 border-black bg-white object-cover">
+                                ${isNotes ? '<div class="absolute -top-2 -right-2 bg-black text-white text-[10px] px-2 py-0.5 rounded-full border border-white uppercase font-black">Me</div>' : ''}
+                            </div>
+                            <div class="flex-1 overflow-hidden text-right">
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="font-black text-lg truncate">${displayName}</span>
+                                    <span class="text-[11px] font-black opacity-40">${time}</span>
+                                </div>
+                                <p class="text-sm font-bold text-gray-500 truncate italic">${chat.lastMessage || 'אין הודעות'}</p>
+                            </div>
+                        </div>`;
+                });
+            });
+        }
+
+        // 3. Поиск пользователей и создание нового чата
+        const searchInput = document.getElementById('user-search');
+        const resultsBox = document.getElementById('search-results');
+
+
+        searchInput.addEventListener('input', async (e) => {
+            const val = e.target.value.trim();
+            if (val.length < 2) { resultsBox.classList.add('hidden'); return; }
+
+            const q = query(collection(db, "users"), where("fullName", ">=", val), where("fullName", "<=", val + '\uf8ff'));
+            const snap = await getDocs(q);
+            
+            resultsBox.innerHTML = '';
+            snap.forEach(userDoc => {
+                if (userDoc.id !== myId) {
+                    const user = userDoc.data();
+                    const el = document.createElement('div');
+                    el.className = "p-4 hover:bg-yellow-400 border-b-2 border-black cursor-pointer font-black transition-colors";
+                    el.innerText = user.fullName;
+                    el.onclick = () => createChat(userDoc.id, user.fullName);
+                    resultsBox.appendChild(el);
+                }
+            });
+            resultsBox.classList.remove('hidden');
+        });
+
+        async function createChat(otherId, otherName) {
+            // Создаем уникальный ID чата (сортируем ID, чтобы всегда был один и тот же путь)
+            const chatId = [myId, otherId].sort().join('_');
+            
+            // Получаем свое имя из локалки
+            const myData = JSON.parse(localStorage.getItem('user_data')) || {};
+            const myName = myData.name || "משתמש";
+
+            await setDoc(doc(db, "chats", chatId), {
+                users: [myId, otherId],
+                lastUpdate: Date.now(),
+                lastMessage: "התחילו לדבר...",
+                names: {
+                    [myId]: myName,
+                    [otherId]: otherName
+                }
+            }, { merge: true });
+
+            resultsBox.classList.add('hidden');
+            searchInput.value = '';
+            openChat(chatId);
+        }
+
+        // 4. Навигация
+        window.openChat = (chatId) => {
+            // Подсветка активного
+            document.querySelectorAll('.chat-item').forEach(i => i.classList.remove('active'));
+            const frame = document.getElementById('messenger-frame');
+            frame.src = `messenger.html?chatId=${chatId}`;
+            
+            if (window.innerWidth < 768) {
+                window.location.href = `messenger.html?chatId=${chatId}`;
+            }
+        };
+
+        // Старт
+        initNotes();
+        listenToChats();
+    </script>
+</body>
+</html>
