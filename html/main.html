@@ -12,32 +12,60 @@
         .yellow-gradient { background: linear-gradient(135deg, #FFD700 0%, #feb900 100%); }
         .job-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 3px solid transparent; }
         .job-card:hover { transform: translateY(-10px); border-color: #feb900; box-shadow: 0 20px 25px -5px rgba(254, 185, 0, 0.2); }
-        .filter-select { background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 8px 16px; font-weight: 700; outline: none; transition: 0.2s; }
+        .filter-select { background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; font-weight: 700; outline: none; transition: 0.2s; }
         .filter-select:focus { border-color: #feb900; }
         .burger-line { width: 24px; height: 3px; background-color: black; margin: 4px 0; border-radius: 2px; }
+        
+        /* Стили для скроллбара (опционально) */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #FFD700; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #e6c200; }
+
+        .faq-bar {
+            background: rgba(255, 255, 255, 0.95); /* Полупрозрачный белый для легкости */
+            backdrop-filter: blur(10px); /* Эффект размытия заднего плана */
+            border-top: 2px solid #e5e7eb; /* Тонкая серая линия вместо жирной черной */
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); /* Мягкая тень */
+        }
+
+        .faq-button {
+            background-color: #1a1a1a; /* Глубокий черный/антрацит */
+            color: white;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .faq-button:hover {
+            background-color: #000000;
+            border-color: #FFD700; /* Желтый появляется только при наведении */
+            transform: translateY(-2px);
+        }
+
+        .faq-button:active {
+            transform: translateY(0);
+        }
     </style>
 </head>
-<body class="bg-gray-50">
-
-    <header class="bg-[#FFD700] p-4 sticky top-0 z-50 shadow-lg border-b-4 border-black">
+<body class="bg-gray-50 pb-24"> <header class="bg-[#FFD700] p-4 sticky top-0 z-50 shadow-lg border-b-4 border-black">
         <div class="container mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <img src="img/logo.png" alt="Jobi" class="h-12 w-12 drop-shadow-md">
+                <img src="img/logo.png" alt="Jobi" class="h-10 w-10 md:h-12 md:w-12 drop-shadow-md">
                 <div class="flex flex-col leading-tight">
-                    <span class="text-3xl font-black italic tracking-tighter text-black">Jobi</span>
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-black/70">עבודות לנוער</span>
+                    <span class="text-2xl md:text-3xl font-black italic tracking-tighter text-black">Jobi</span>
+                    <span class="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-black/70">עבודות לנוער</span>
                 </div>
             </div>
 
             <div class="hidden md:flex flex-1 max-w-md mx-8">
-                <div class="relative w-full flex items-center bg-white rounded-full border-2 border-black px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                <div class="relative w-full flex items-center bg-white rounded-2xl border-2 border-black px-4 py-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] focus-within:translate-y-0.5 focus-within:shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] transition-all">
                     <input type="text" id="searchInput" placeholder="חפש עבודה חלומית..." class="w-full bg-transparent outline-none font-bold pr-2 text-right">
                     <img src="img/search.png" alt="Search" class="h-5 w-5 cursor-pointer hover:scale-110 transition" onclick="handleSearch()">
                 </div>
             </div>
 
             <div class="flex items-center gap-4">
-                <div id="userMenuBtn" class="cursor-pointer group bg-white p-2 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none transition-all">
+                <div id="userMenuBtn" class="cursor-pointer group bg-white p-2 md:p-3 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none transition-all">
                     <div class="burger-line"></div>
                     <div class="burger-line"></div>
                     <div class="burger-line"></div>
@@ -46,31 +74,38 @@
         </div>
     </header>
 
+    <div class="md:hidden bg-[#FFD700] border-b-4 border-black p-4 z-40 relative">
+        <div class="relative w-full flex items-center bg-white rounded-2xl border-2 border-black px-4 py-3 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <input type="text" id="searchInputMobile" placeholder="חפש עבודה..." class="w-full bg-transparent outline-none font-bold pr-2 text-right text-lg">
+            <img src="img/search.png" alt="Search" class="h-6 w-6 cursor-pointer hover:scale-110 transition" onclick="handleSearchMobile()">
+        </div>
+    </div>
+
     <div id="sideMenu" class="fixed inset-0 bg-black/50 z-[60] hidden backdrop-blur-sm">
-        <div class="absolute left-0 top-0 h-full w-72 bg-white border-r-4 border-black p-6 transition-transform">
-            <button onclick="toggleMenu()" class="text-2xl font-black mb-8">✕ סגור</button>
+        <div class="absolute left-0 top-0 h-full w-72 max-w-[80%] bg-white border-r-4 border-black p-6 transition-transform overflow-y-auto">
+            <button onclick="toggleMenu()" class="text-2xl font-black mb-8 hover:text-[#FFD700] transition-colors">✕ סגור</button>
             <nav id="menuContent" class="flex flex-col gap-4 font-black text-xl italic">
                 </nav>
         </div>
     </div>
 
-    <main class="container mx-auto px-4 py-8">
+    <main class="container mx-auto px-4 py-6 md:py-8">
         
-        <div onclick="window.location.href='https://t.me/jobi_israel'" class="group relative overflow-hidden rounded-3xl border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-12 cursor-pointer transition-all active:scale-95">
-            <img src="img/banner.png" alt="Telegram" class="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end p-8">
-                <span class="text-white text-2xl font-black">הצטרפו לקהילת הטלגרם שלנו 🚀</span>
+        <div onclick="window.location.href='https://t.me/jobi_israel'" class="group relative overflow-hidden rounded-3xl border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] md:shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mb-8 md:mb-12 cursor-pointer transition-all active:scale-95 bg-black">
+            <img src="img/banner.png" alt="Telegram" class="w-full h-32 md:h-auto object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-4 md:p-8">
+                <span class="text-white text-xl md:text-3xl font-black italic shadow-black drop-shadow-lg">הצטרפו לקהילת הטלגרם שלנו 🚀</span>
             </div>
         </div>
 
-        <div class="flex flex-wrap gap-4 mb-10 items-center justify-between border-b-4 border-[#FFD700] pb-6">
+        <div class="flex flex-col md:flex-row gap-4 mb-8 items-start md:items-center justify-between border-b-4 border-[#FFD700] pb-6">
             <div class="flex flex-col">
-                <h2 class="text-4xl font-black italic text-black tracking-tighter">משרות חמות 🔥</h2>
-                <p class="font-bold text-gray-500">מצא את הכסף הגדול שלך</p>
+                <h2 class="text-3xl md:text-4xl font-black italic text-black tracking-tighter">משרות חמות 🔥</h2>
+                <p class="font-bold text-gray-500 mt-1">מצא את הכסף הגדול שלך</p>
             </div>
             
-            <div class="flex gap-3 flex-wrap">
-                <select id="filter-city" class="filter-select border-2 border-black shadow-[4px_4px_0px_0px_rgba(255,215,0,1)]">
+            <div class="flex flex-col sm:flex-row gap-3 w-full md:w-auto mt-2 md:mt-0">
+                <select id="filter-city" class="filter-select w-full sm:w-48 border-2 border-black shadow-[4px_4px_0px_0px_rgba(255,215,0,1)] cursor-pointer">
                     <option value="">כל הארץ</option>
                     <option value="Tel Aviv">תל אביב</option>
                     <option value="Haifa">חיפה</option>
@@ -79,7 +114,7 @@
                     <option value="Beersheba">באר שבע</option>
                 </select>
 
-                <select id="filter-age" class="filter-select border-2 border-black shadow-[4px_4px_0px_0px_rgba(255,215,0,1)]">
+                <select id="filter-age" class="filter-select w-full sm:w-32 border-2 border-black shadow-[4px_4px_0px_0px_rgba(255,215,0,1)] cursor-pointer">
                     <option value="">גיל</option>
                     <option value="14">14+</option>
                     <option value="16">16+</option>
@@ -88,9 +123,18 @@
             </div>
         </div>
 
-        <div id="jobs-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div id="jobs-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
             </div>
     </main>
+
+    <div class="fixed bottom-0 left-0 right-0 faq-bar p-3 md:p-4 z-40 flex justify-center items-center">
+    <a href="faq.html" class="faq-button w-full max-w-sm flex items-center justify-center gap-3 py-3 px-6 rounded-xl font-bold text-sm md:text-base tracking-wide uppercase shadow-sm">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#FFD700]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span class="tracking-tight">מרכז מידע ושאלות נפוצות (FAQ)</span>
+    </a>
+</div>
 
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
