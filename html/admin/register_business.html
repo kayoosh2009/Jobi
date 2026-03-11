@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobi Admin — רישום עסק</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Heebo', sans-serif; background-color: #f8f8f8; }
+        .neo-input {
+            border: 3px solid black;
+            box-shadow: 4px 4px 0px 0px rgba(0,0,0,1);
+            border-radius: 12px;
+            padding: 12px;
+            font-weight: 700;
+            outline: none;
+        }
+        .neo-input:focus { border-color: #FFD700; box-shadow: 4px 4px 0px 0px #FFD700; }
+        
+        .section-card {
+            background: white;
+            border: 4px solid black;
+            box-shadow: 8px 8px 0px 0px rgba(0,0,0,1);
+            padding: 24px;
+            border-radius: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .save-btn {
+            background: #FFD700;
+            border: 4px solid black;
+            box-shadow: 6px 6px 0px 0px rgba(0,0,0,1);
+            font-weight: 900;
+            transition: 0.2s;
+        }
+        .save-btn:active { transform: translate(4px, 4px); box-shadow: none; }
+        
+        label { display: block; font-weight: 900; margin-bottom: 8px; font-style: italic; font-size: 0.9rem; }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <header class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-black italic">רישום <span class="text-[#feb900]">עסק חדש</span></h1>
+            <button onclick="history.back()" class="border-2 border-black px-4 py-2 rounded-xl font-bold hover:bg-gray-100 transition">ביטול ✕</button>
+        </header>
+
+        <form id="reg-form">
+            <div class="section-card">
+                <h2 class="text-xl font-black mb-6 border-b-4 border-[#FFD700] inline-block uppercase">פרטי התחברות (System)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                    <div>
+                        <label>אימייל עסקי (חובה @jobi.israel):</label>
+                        <input type="email" id="biz-email" placeholder="name@jobi.israel" required class="w-full neo-input">
+                    </div>
+                    <div>
+                        <label>סיסמה ראשונית:</label>
+                        <input type="password" id="biz-password" placeholder="••••••••" required class="w-full neo-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h2 class="text-xl font-black mb-6 border-b-4 border-[#FFD700] inline-block">מידע על העסק</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2 flex items-center gap-4">
+                        <div class="w-20 h-20 border-4 border-black rounded-2xl flex items-center justify-center bg-gray-50 overflow-hidden relative" id="logo-preview">
+                            <span class="text-[10px] font-black opacity-30 text-center">לוגו</span>
+                        </div>
+                        <div class="flex-1">
+                            <label>לוגו העסק:</label>
+                            <input type="file" id="biz-logo" accept="image/*" class="w-full text-xs font-bold">
+                        </div>
+                    </div>
+                    <div>
+                        <label>שם העסק:</label>
+                        <input type="text" id="biz-name" placeholder="לדוגמה: פיצה האט" required class="w-full neo-input">
+                    </div>
+                    <div>
+                        <label>מיקום (עיר/כתובת):</label>
+                        <input type="text" id="biz-location" placeholder="תל אביב, אבן גבירול 12" required class="w-full neo-input">
+                    </div>
+                    <div>
+                        <label>טלפון ליצירת קשר:</label>
+                        <input type="tel" id="biz-phone" placeholder="050-0000000" required class="w-full neo-input">
+                    </div>
+                    <div>
+                        <label>שעות פעילות:</label>
+                        <input type="text" id="biz-hours" placeholder="09:00 - 18:00" class="w-full neo-input">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label>תיאור העסק:</label>
+                        <textarea id="biz-desc" rows="3" placeholder="ספר קצת על העסק..." class="w-full neo-input"></textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label>תמונות נוספות של המקום:</label>
+                        <input type="file" id="biz-photos" multiple accept="image/*" class="w-full text-xs font-bold">
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-card">
+                <h2 class="text-xl font-black mb-6 border-b-4 border-[#FFD700] inline-block">דרישות עבודה (ברירת מחדל)</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label>גיל מינימלי:</label>
+                        <input type="number" id="req-age" placeholder="16" class="w-full neo-input">
+                    </div>
+                    <div>
+                        <label>שכר לשעה (₪):</label>
+                        <input type="number" id="req-salary" placeholder="45" class="w-full neo-input">
+                    </div>
+                    <div>
+                        <label>פרמטרים דרושים:</label>
+                        <input type="text" id="req-traits" placeholder="כוח, חריצות, חיוך" class="w-full neo-input">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="w-full py-5 save-btn rounded-2xl text-2xl uppercase italic mb-10">
+                צור חשבון עסקי ושמור במערכת 🚀
+            </button>
+        </form>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDA9KfdcE2acdeSgkfRVS_KiX1eBBrR1Ao",
+            authDomain: "jobi-il.firebaseapp.com",
+            projectId: "jobi-il",
+            appId: "1:1049483275681:web:ef9bb3c9343aa0939d6fe0"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // Превью логотипа
+        document.getElementById('biz-logo').onchange = function(e) {
+            const reader = new FileReader();
+            reader.onload = function() {
+                const preview = document.getElementById('logo-preview');
+                preview.innerHTML = `<img src="${reader.result}" class="w-full h-full object-cover">`;
+            }
+            reader.readAsDataURL(e.target.files[0]);
+        };
+
+        document.getElementById('reg-form').onsubmit = async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('biz-email').value;
+            const password = document.getElementById('biz-password').value;
+
+            if (!email.endsWith('@jobi.israel')) {
+                alert("חובה להשתמש בדומיין @jobi.israel");
+                return;
+            }
+
+            try {
+                // 1. Создаем пользователя в Auth
+                const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                const uid = userCred.user.uid;
+
+                // 2. Сохраняем данные в Firestore
+                await setDoc(doc(db, "businesses", uid), {
+                    email: email,
+                    name: document.getElementById('biz-name').value,
+                    location: document.getElementById('biz-location').value,
+                    phone: document.getElementById('biz-phone').value,
+                    hours: document.getElementById('biz-hours').value,
+                    description: document.getElementById('biz-desc').value,
+                    defaultAge: document.getElementById('req-age').value,
+                    defaultSalary: document.getElementById('req-salary').value,
+                    traits: document.getElementById('req-traits').value,
+                    createdAt: Date.now()
+                });
+
+                alert("עסק נרשם בהצלחה!");
+                window.location.href = 'dashboard.html';
+                
+            } catch (error) {
+                console.error(error);
+                alert("שגיאה ברישום העסק: " + error.message);
+            }
+        };
+    </script>
+</body>
+</html>
