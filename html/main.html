@@ -10,27 +10,26 @@
     <style>
         body { font-family: 'Heebo', sans-serif; background-color: #ffffff; }
         .yellow-gradient { background: linear-gradient(135deg, #FFD700 0%, #feb900 100%); }
-        .job-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 3px solid transparent; }
+        .job-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 4px solid black; }
         .job-card:hover { transform: translateY(-10px); border-color: #feb900; box-shadow: 0 20px 25px -5px rgba(254, 185, 0, 0.2); }
         .filter-select { background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 12px 16px; font-weight: 700; outline: none; transition: 0.2s; }
         .filter-select:focus { border-color: #feb900; }
         .burger-line { width: 24px; height: 3px; background-color: black; margin: 4px 0; border-radius: 2px; }
         
-        /* Стили для скроллбара (опционально) */
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #FFD700; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #e6c200; }
 
         .faq-bar {
-            background: rgba(255, 255, 255, 0.95); /* Полупрозрачный белый для легкости */
-            backdrop-filter: blur(10px); /* Эффект размытия заднего плана */
-            border-top: 2px solid #e5e7eb; /* Тонкая серая линия вместо жирной черной */
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); /* Мягкая тень */
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 2px solid #e5e7eb;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
         }
 
         .faq-button {
-            background-color: #1a1a1a; /* Глубокий черный/антрацит */
+            background-color: #1a1a1a;
             color: white;
             transition: all 0.3s ease;
             border: 2px solid transparent;
@@ -38,7 +37,7 @@
 
         .faq-button:hover {
             background-color: #000000;
-            border-color: #FFD700; /* Желтый появляется только при наведении */
+            border-color: #FFD700;
             transform: translateY(-2px);
         }
 
@@ -47,7 +46,9 @@
         }
     </style>
 </head>
-<body class="bg-gray-50 pb-24"> <header class="bg-[#FFD700] p-4 sticky top-0 z-50 shadow-lg border-b-4 border-black">
+<body class="bg-gray-50 pb-24"> 
+
+    <header class="bg-[#FFD700] p-4 sticky top-0 z-50 shadow-lg border-b-4 border-black">
         <div class="container mx-auto flex items-center justify-between">
             <div class="flex items-center gap-3">
                 <img src="img/logo.png" alt="Jobi" class="h-10 w-10 md:h-12 md:w-12 drop-shadow-md">
@@ -65,7 +66,7 @@
             </div>
 
             <div class="flex items-center gap-4">
-                <div id="userMenuBtn" class="cursor-pointer group bg-white p-2 md:p-3 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none transition-all">
+                <div id="userMenuBtn" onclick="toggleMenu()" class="cursor-pointer group bg-white p-2 md:p-3 rounded-xl border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-y-1 active:shadow-none transition-all">
                     <div class="burger-line"></div>
                     <div class="burger-line"></div>
                     <div class="burger-line"></div>
@@ -124,20 +125,134 @@
         </div>
 
         <div id="jobs-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-            </div>
+            <p class="col-span-full text-center font-bold opacity-50 py-10 text-xl">טוען משרות...</p>
+        </div>
     </main>
 
     <div class="fixed bottom-0 left-0 right-0 faq-bar p-3 md:p-4 z-40 flex justify-center items-center">
-    <a href="faq.html" class="faq-button w-full max-w-sm flex items-center justify-center gap-3 py-3 px-6 rounded-xl font-bold text-sm md:text-base tracking-wide uppercase shadow-sm">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#FFD700]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span class="tracking-tight">מרכז מידע ושאלות נפוצות (FAQ)</span>
-    </a>
-</div>
+        <a href="faq.html" class="faq-button w-full max-w-sm flex items-center justify-center gap-3 py-3 px-6 rounded-xl font-bold text-sm md:text-base tracking-wide uppercase shadow-sm">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#FFD700]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span class="tracking-tight">מרכז מידע ושאלות נפוצות (FAQ)</span>
+        </a>
+    </div>
 
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
-    <script src="../js/main.js"></script>
+    <script type="module">
+    // 1. Импорт модулей Firebase
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, onSnapshot, query, where } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // 2. Твой конфиг (проверь projectId и appId, они должны быть твоими)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDA9KfdcE2acdeSgkfRVS_KiX1eBBrR1Ao",
+        authDomain: "jobi-il.firebaseapp.com",
+        projectId: "jobi-il",
+        appId: "1:1049483275681:web:ef9bb3c9343aa0939d6fe0"
+    };
+
+    // 3. Инициализация
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // Ссылки на элементы интерфейса
+    const list = document.getElementById('jobs-list');
+    const cityFilter = document.getElementById('filter-city');
+    const ageFilter = document.getElementById('filter-age');
+
+    // --- ФУНКЦИИ ИНТЕРФЕЙСА ---
+    
+    // Делаем функции доступными для HTML через объект window
+    window.toggleMenu = () => {
+        const sideMenu = document.getElementById('sideMenu');
+        const menuContent = document.getElementById('menuContent');
+        sideMenu.classList.toggle('hidden');
+        
+        const user = localStorage.getItem('user_id');
+        if (!user) {
+            menuContent.innerHTML = `<a href="login.html" class="hover:text-[#FFD700] transition">כניסה</a>`;
+        } else {
+            menuContent.innerHTML = `
+                <a href="profile.html" class="hover:text-[#FFD700] transition">פרופיל אישי</a>
+                <a href="chats.html" class="hover:text-[#FFD700] transition">הצ'אטים שלי</a>
+                <hr class="border-2 border-black my-2">
+                <a href="#" id="logout-btn" class="text-red-500 font-black italic">התנתק</a>
+            `;
+            document.getElementById('logout-btn').onclick = () => {
+                localStorage.clear();
+                location.reload();
+            };
+        }
+    };
+
+    window.handleSearch = () => {
+        const val = document.getElementById('searchInput').value;
+        if(val) window.location.href = `search.html?q=${encodeURIComponent(val)}`;
+    };
+
+    // --- ЗАГРУЗКА ДАННЫХ ---
+
+    const loadJobs = () => {
+        let q = collection(db, "businesses");
+
+        // Фильтр по городу
+        if (cityFilter && cityFilter.value) {
+            q = query(q, where("location", "==", cityFilter.value));
+        }
+
+        // Подписываемся на обновления
+        onSnapshot(q, (snapshot) => {
+            if (!list) return;
+            list.innerHTML = '';
+            
+            if (snapshot.empty) {
+                list.innerHTML = '<p class="col-span-full text-center font-bold opacity-50 py-10 text-xl text-black">לא נמצאו משרות... 😕</p>';
+                return;
+            }
+
+            // Внутри функции onSnapshot, замени генерацию карточки:
+            snapshot.forEach((doc) => {
+                const job = doc.data();
+                
+                // Проверяем наличие фото (логотипа)
+                const displayPhoto = job.logo || job.image || 'https://via.placeholder.com/400x200?text=Jobi+Business';
+
+                list.innerHTML += `
+                    <div class="job-card bg-white rounded-3xl overflow-hidden shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col transition-all border-4 border-black">
+                        <div class="h-48 overflow-hidden relative border-b-4 border-black bg-gray-100">
+                            <img src="${displayPhoto}" class="w-full h-full object-cover" onerror="this.src='https://via.placeholder.com/400x200?text=Error+Loading'">
+                            
+                            <div class="absolute top-4 right-4 bg-[#FFD700] text-black font-black px-3 py-1 rounded-full border-2 border-black text-sm shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                                ${job.defaultAge || '14'}+
+                            </div>
+                        </div>
+                        <div class="p-6 flex flex-col flex-1">
+                            <h3 class="text-2xl font-black mb-1 italic leading-tight text-right text-black">${job.name || 'עסק'}</h3>
+                            <p class="text-gray-500 font-bold text-sm mb-3 text-right">📍 ${job.location || 'כל הארץ'}</p>
+                            <p class="text-gray-600 font-bold text-sm mb-4 line-clamp-2 text-right">${job.description || ''}</p>
+                            
+                            <div class="flex items-center justify-between mt-auto pt-4 border-t-2 border-black/10">
+                                <span class="text-2xl font-black italic text-black">₪${job.defaultSalary || '40'}</span>
+                                <button class="bg-black text-[#FFD700] font-black px-6 py-2 rounded-xl hover:scale-105 transition-transform border-2 border-black shadow-[3px_3px_0px_0px_rgba(254,185,0,1)]">
+                                    פרטים
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }, (error) => {
+            console.error("Ошибка Firestore:", error);
+            list.innerHTML = '<p class="col-span-full text-center text-red-500 font-bold">שגיאה בטעינת נתונים. בדוק את הרשאות ה-Firebase שלך.</p>';
+        });
+    };
+
+    // Слушатели фильтров
+    if (cityFilter) cityFilter.addEventListener('change', loadJobs);
+    if (ageFilter) ageFilter.addEventListener('change', loadJobs);
+
+    // Запуск
+    loadJobs();
+</script>
 </body>
 </html>
