@@ -126,69 +126,76 @@
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDA9KfdcE2acdeSgkfRVS_KiX1eBBrR1Ao",
-            authDomain: "jobi-il.firebaseapp.com",
-            projectId: "jobi-il",
-            appId: "1:1049483275681:web:ef9bb3c9343aa0939d6fe0"
-        };
+    const firebaseConfig = {
+        apiKey: "AIzaSyDA9KfdcE2acdeSgkfRVS_KiX1eBBrR1Ao",
+        authDomain: "jobi-il.firebaseapp.com",
+        projectId: "jobi-il",
+        appId: "1:1049483275681:web:ef9bb3c9343aa0939d6fe0"
+    };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const auth = getAuth(app);
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const auth = getAuth(app);
 
-        // Превью логотипа
-        document.getElementById('biz-logo').onchange = function(e) {
-            const reader = new FileReader();
-            reader.onload = function() {
-                const preview = document.getElementById('logo-preview');
-                preview.innerHTML = `<img src="${reader.result}" class="w-full h-full object-cover">`;
-            }
-            reader.readAsDataURL(e.target.files[0]);
-        };
+    let logoBase64 = ""; // Переменная для хранения строки картинки
 
-        document.getElementById('reg-form').onsubmit = async (e) => {
-            e.preventDefault();
+    // Превью и конвертация логотипа
+    document.getElementById('biz-logo').onchange = function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function() {
+            logoBase64 = reader.result; // Сохраняем строку картинки
+            const preview = document.getElementById('logo-preview');
+            preview.innerHTML = `<img src="${logoBase64}" class="w-full h-full object-cover">`;
+        }
+        reader.readAsDataURL(file);
+    };
+
+    document.getElementById('reg-form').onsubmit = async (e) => {
+        e.preventDefault();
+        
+        const email = document.getElementById('biz-email').value;
+        const password = document.getElementById('biz-password').value;
+
+        if (!email.endsWith('@jobi.israel')) {
+            alert("חובה להשתמש בדומיין @jobi.israel");
+            return;
+        }
+
+        try {
+            // 1. Создаем пользователя в Auth
+            const userCred = await createUserWithEmailAndPassword(auth, email, password);
+            const uid = userCred.user.uid;
+
+            // 2. Сохраняем данные в Firestore
+            await setDoc(doc(db, "businesses", uid), {
+                email: email,
+                logo: logoBase64, // ТЕПЕРЬ ФОТО СОХРАНЯЕТСЯ
+                name: document.getElementById('biz-name').value,
+                location: document.getElementById('biz-location').value,
+                phone: document.getElementById('biz-phone').value,
+                hours: document.getElementById('biz-hours').value,
+                description: document.getElementById('biz-desc').value,
+                defaultAge: document.getElementById('req-age').value,
+                defaultSalary: document.getElementById('req-salary').value,
+                traits: document.getElementById('req-traits').value,
+                createdAt: Date.now()
+            });
+
+            alert("עסק נרשם בהצלחה!");
+            window.location.href = 'dashboard.html';
             
-            const email = document.getElementById('biz-email').value;
-            const password = document.getElementById('biz-password').value;
-
-            if (!email.endsWith('@jobi.israel')) {
-                alert("חובה להשתמש בדומיין @jobi.israel");
-                return;
-            }
-
-            try {
-                // 1. Создаем пользователя в Auth
-                const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                const uid = userCred.user.uid;
-
-                // 2. Сохраняем данные в Firestore
-                await setDoc(doc(db, "businesses", uid), {
-                    email: email,
-                    name: document.getElementById('biz-name').value,
-                    location: document.getElementById('biz-location').value,
-                    phone: document.getElementById('biz-phone').value,
-                    hours: document.getElementById('biz-hours').value,
-                    description: document.getElementById('biz-desc').value,
-                    defaultAge: document.getElementById('req-age').value,
-                    defaultSalary: document.getElementById('req-salary').value,
-                    traits: document.getElementById('req-traits').value,
-                    createdAt: Date.now()
-                });
-
-                alert("עסק נרשם בהצלחה!");
-                window.location.href = 'dashboard.html';
-                
-            } catch (error) {
-                console.error(error);
-                alert("שגיאה ברישום העסק: " + error.message);
-            }
-        };
-    </script>
+        } catch (error) {
+            console.error(error);
+            alert("שגיאה ברישום העסק: " + error.message);
+        }
+    };
+</script>
 </body>
 </html>
