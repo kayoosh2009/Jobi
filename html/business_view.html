@@ -19,7 +19,6 @@
         .star-rating label:hover, .star-rating label:hover ~ label,
         .star-rating input:checked ~ label { color: #FFD700; transform: scale(1.1); }
         
-        /* Класс для отключения звездочек, если уже голосовал */
         .star-rating.disabled label { pointer-events: none; color: #e5e7eb !important; opacity: 0.5; }
 
         ::-webkit-scrollbar { width: 8px; }
@@ -31,7 +30,7 @@
 
     <div id="loading-screen" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <div class="w-24 h-24 border-8 border-black border-t-[#FFD700] rounded-full animate-spin shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6"></div>
-        <h2 class="text-4xl font-black italic animate-pulse">טוען נתונים...</h2>
+        <h2 id="loading-text" class="text-4xl font-black italic animate-pulse">בודק הרשאה...</h2>
     </div>
 
     <header class="bg-[#FFD700] p-4 sticky top-0 z-50 shadow-lg border-b-4 border-black mb-8">
@@ -55,22 +54,29 @@
 
             <div class="flex flex-col md:flex-row gap-8 items-start">
                 <div class="w-full md:w-1/3 aspect-square border-4 border-black rounded-3xl overflow-hidden shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-gray-100 flex-shrink-0">
-                    <img id="biz-image" src="" class="w-full h-full object-cover" alt="לוגו העסק">
+                    <img id="biz-image" src="" class="w-full h-full object-cover" alt="לוגו">
                 </div>
                 
                 <div class="flex-1 w-full">
-                    <h1 id="biz-name" class="text-5xl font-black italic mb-2 text-black tracking-tighter"></h1>
-                    <p id="biz-location" class="text-xl font-bold text-gray-500 mb-6 italic flex items-center gap-2">📍 <span></span></p>
-                    <p id="biz-desc" class="text-lg font-bold border-r-4 border-[#FFD700] pr-4 mb-8 leading-relaxed"></p>
+                    <h1 id="biz-name" class="text-5xl font-black italic mb-2 text-black tracking-tighter text-right"></h1>
 
-                    <div class="grid grid-cols-2 gap-4 mb-8">
+                    <p id="biz-desc" class="text-lg font-bold border-r-4 border-[#FFD700] pr-4 mb-8 leading-relaxed text-right"></p>
+
+                    <div class="w-full mt-2 mb-6">
+                        <p id="biz-location" class="text-xl font-bold text-gray-500 italic text-right flex flex-row-reverse items-start justify-start gap-2">
+                            <span class="inline-block">📍</span>
+                            <span class="break-words max-w-full"></span>
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mb-8 text-right">
                         <div class="border-2 border-black p-3 rounded-xl bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
                             <span class="block text-xs font-black text-gray-500 uppercase">שעות פעילות</span>
                             <span id="biz-hours" class="font-bold text-lg"></span>
                         </div>
                         <div class="border-2 border-black p-3 rounded-xl bg-[#FFD700] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
-                            <span class="block text-xs font-black text-black/60 uppercase">שכר התחלתי</span>
-                            <span class="font-black text-xl italic">₪<span id="biz-salary"></span>/שעה</span>
+                            <span class="block text-xs font-black text-black/60 uppercase">שכר לשעה</span>
+                            <span class="font-black text-xl italic">₪<span id="biz-salary"></span></span>
                         </div>
                         <div class="border-2 border-black p-3 rounded-xl bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
                             <span class="block text-xs font-black text-gray-500 uppercase">גיל מינימלי</span>
@@ -82,7 +88,7 @@
                         </div>
                     </div>
 
-                    <a id="call-link" href="#" class="neo-btn bg-black text-[#FFD700] w-full block text-center py-4 text-3xl font-black italic rounded-2xl">📞 התקשר עכשיו</a>
+                    <a id="call-link" href="#" class="neo-btn bg-black text-[#FFD700] w-full block text-center py-4 text-3xl font-black italic rounded-2xl uppercase">📞 התקשר עכשיו</a>
                 </div>
             </div>
         </div>
@@ -90,7 +96,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
             <div class="space-y-8">
                 <div class="neo-card p-6 bg-white border-t-8 border-t-[#FFD700]">
-                    <h3 class="text-2xl font-black italic mb-4 text-center">איך היה שם? דירוג מהיר</h3>
+                    <h3 class="text-2xl font-black italic mb-4 text-center text-black">דרג את העסק</h3>
                     <div class="star-rating" id="star-container">
                         <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
                         <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
@@ -102,16 +108,15 @@
                 </div>
 
                 <div class="neo-card p-6 bg-black text-white">
-                    <h3 class="text-2xl font-black italic mb-4 text-right text-[#FFD700]">ספר למחפשי עבודה אחרים</h3>
-                    <textarea id="comment-input" placeholder="מה אהבת? מה פחות? תן פרטים..." class="w-full p-4 border-4 border-[#FFD700] rounded-2xl font-bold h-32 focus:outline-none mb-4 text-black"></textarea>
-                    <button id="post-comment" class="neo-btn bg-[#FFD700] text-black w-full py-4 rounded-xl text-2xl italic hover:bg-white transition-colors">שלח ביקורת 🚀</button>
+                    <h3 class="text-2xl font-black italic mb-4 text-right text-[#FFD700]">כתוב ביקורת</h3>
+                    <textarea id="comment-input" placeholder="איך הייתה החוויה שלך?" class="w-full p-4 border-4 border-[#FFD700] rounded-2xl font-bold h-32 focus:outline-none mb-4 text-black text-right"></textarea>
+                    <button id="post-comment" class="neo-btn bg-[#FFD700] text-black w-full py-4 rounded-xl text-2xl italic hover:bg-white transition-colors">שלח עכשיו 🚀</button>
                 </div>
             </div>
 
             <section>
-                <h2 class="text-3xl font-black italic mb-6 border-b-4 border-black pb-2 inline-block">מה אחרים אומרים:</h2>
-                <div id="comments-list" class="space-y-6">
-                </div>
+                <h2 class="text-3xl font-black italic mb-6 border-b-4 border-black pb-2 inline-block text-black text-right w-full">מה הקהילה אומרת:</h2>
+                <div id="comments-list" class="space-y-6"></div>
             </section>
         </div>
     </main>
@@ -130,20 +135,21 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const bizId = urlParams.get('id');
+        // --- ПРОВЕРКА АВТОРИЗАЦИИ (КАК В MAIN.JS) ---
+        const userId = localStorage.getItem('user_id'); // Берем ID из localStorage, как в твоем main.js
 
-        let userId = localStorage.getItem('jobi_user_id');
         if (!userId) {
-            userId = 'user_' + Math.random().toString(36).substr(2, 9);
-            localStorage.setItem('jobi_user_id', userId);
+            // Если пользователя нет — перекидываем на логин
+            window.location.href = 'login.html';
         }
 
-        let userHasRated = false; // Переменная для проверки, голосовал ли уже юзер
+        const urlParams = new URLSearchParams(window.location.search);
+        const bizId = urlParams.get('id');
+        let userHasRated = false;
 
-        async function loadData() {
+        async function init() {
             if (!bizId) {
-                alert("שגיאה: חסר מזהה עסק בקישור");
+                alert("שגיאה: חסר מזהה עסק");
                 window.location.href = 'main.html';
                 return;
             }
@@ -154,18 +160,18 @@
 
                 if (snap.exists()) {
                     const d = snap.data();
-                    document.getElementById('biz-name').innerText = d.name || 'שם לא ידוע';
-                    document.getElementById('biz-location').querySelector('span').innerText = d.location || 'כתובת לא צוינה';
-                    document.getElementById('biz-desc').innerText = d.description || 'אין תיאור לעסק זה.';
+                    // Рендерим данные
+                    document.getElementById('biz-name').innerText = d.name || 'עסק ללא שם';
+                    document.getElementById('biz-location').querySelector('span').innerText = d.location || 'לא צוין מיקום';
+                    document.getElementById('biz-desc').innerText = d.description || 'אין תיאור זמין.';
                     document.getElementById('biz-hours').innerText = d.hours || 'לא צוין';
-                    document.getElementById('biz-salary').innerText = d.defaultSalary || '---';
-                    document.getElementById('biz-age').innerText = d.defaultAge || '16';
-                    document.getElementById('biz-traits').innerText = d.traits || 'לא צוינו דרישות מיוחדות';
+                    document.getElementById('biz-salary').innerText = d.defaultSalary || '0';
+                    document.getElementById('biz-age').innerText = d.defaultAge || '14';
+                    document.getElementById('biz-traits').innerText = d.traits || 'אין דרישות מיוחדות';
                     document.getElementById('call-link').href = 'tel:' + (d.phone || '');
-                    
-                    const imgEl = document.getElementById('biz-image');
-                    imgEl.src = d.logo || 'https://via.placeholder.com/400x400?text=Jobi';
+                    document.getElementById('biz-image').src = d.logo || 'https://via.placeholder.com/400x400?text=Jobi';
 
+                    // Показываем контент
                     document.getElementById('loading-screen').classList.add('opacity-0');
                     setTimeout(() => {
                         document.getElementById('loading-screen').classList.add('hidden');
@@ -176,18 +182,17 @@
 
                     loadReviews();
                 } else {
-                    alert("העסק לא נמצא במערכת");
+                    alert("העסק לא נמצא");
                     window.location.href = 'main.html';
                 }
             } catch (error) {
-                console.error("Error loading business:", error);
+                console.error("Load error:", error);
             }
         }
 
         // ОТПРАВКА ОЦЕНКИ
         document.querySelectorAll('input[name="rating"]').forEach(star => {
             star.onclick = async (e) => {
-                // Защита: если уже голосовал, не даем отправить
                 if (userHasRated) {
                     alert("כבר דירגת את העסק הזה!");
                     e.preventDefault();
@@ -195,41 +200,33 @@
                 }
 
                 const val = parseInt(e.target.value);
-                
-                // Блокируем звезды на время отправки
                 document.getElementById('star-container').classList.add('disabled');
                 
                 try {
                     await addDoc(collection(db, "reviews"), {
                         businessId: bizId,
-                        userId: userId,
+                        userId: userId, // Используем официальный user_id
                         rating: val,
                         type: "star",
                         createdAt: Date.now()
                     });
-                    
-                    userHasRated = true; // Отмечаем, что проголосовал
-                    
+                    userHasRated = true;
                 } catch (error) {
-                    console.error("Error saving star:", error);
+                    console.error("Star save error:", error);
                     document.getElementById('star-container').classList.remove('disabled');
                 }
             };
         });
 
-        // ОТПРАВКА КОММЕНТАРИЯ (оставляем без изменений, комменты можно писать несколько раз)
+        // ОТПРАВКА ОТЗЫВА
         document.getElementById('post-comment').onclick = async () => {
             const inputEl = document.getElementById('comment-input');
             const text = inputEl.value.trim();
-            
-            if (text.length < 3) {
-                alert("אנא כתוב תגובה ארוכה יותר");
-                return;
-            }
+            if (text.length < 3) return alert("אנא כתוב ביקורת מפורטת יותר");
 
             const btn = document.getElementById('post-comment');
-            btn.innerText = "שולח...";
             btn.disabled = true;
+            btn.innerText = "שולח...";
 
             try {
                 await addDoc(collection(db, "reviews"), {
@@ -240,19 +237,17 @@
                     type: "text",
                     createdAt: Date.now()
                 });
-                
                 inputEl.value = '';
-                alert("תודה! התגובה פורסמה.");
+                alert("הביקורת פורסמה בהצלחה!");
             } catch (error) {
-                console.error("Error saving comment:", error);
-                alert("שגיאה בשליחת התגובה");
+                console.error("Comment error:", error);
             } finally {
-                btn.innerText = "שלח ביקורת 🚀";
                 btn.disabled = false;
+                btn.innerText = "שלח עכשיו 🚀";
             }
         };
 
-        // ЗАГРУЗКА ОТЗЫВОВ И ПРОВЕРКА "УЖЕ ПРОГОЛОСОВАЛ"
+        // ЗАГРУЗКА И ПОДСЧЕТ
         function loadReviews() {
             const q = query(collection(db, "reviews"), where("businessId", "==", bizId), orderBy("createdAt", "desc"));
             
@@ -260,29 +255,21 @@
                 const list = document.getElementById('comments-list');
                 list.innerHTML = '';
                 let sum = 0, count = 0;
-                userHasRated = false; // Сбрасываем перед проверкой
-
-                if (snap.empty) {
-                    list.innerHTML = '<p class="text-gray-500 font-bold italic">אין עדיין תגובות. תהיה הראשון!</p>';
-                }
+                userHasRated = false;
 
                 snap.forEach(d => {
                     const r = d.data();
                     
-                    // Проверяем, есть ли уже оценка от этого пользователя
-                    if (r.type === "star" && r.userId === userId) {
-                        userHasRated = true;
-                    }
+                    if (r.type === "star" && r.userId === userId) userHasRated = true;
 
                     if (r.type === "star" && r.rating) {
                         sum += r.rating;
                         count++;
-                    } 
-                    else if (r.type === "text" && r.text) {
+                    } else if (r.type === "text" && r.text) {
                         const date = new Date(r.createdAt).toLocaleDateString('he-IL');
                         list.innerHTML += `
-                            <div class="neo-card p-4 bg-white border-2">
-                                <div class="flex justify-between items-center mb-2">
+                            <div class="neo-card p-4 bg-white border-2 text-right">
+                                <div class="flex justify-between items-center mb-2 flex-row-reverse">
                                     <p class="font-black text-sm text-[#feb900]">${r.userName || 'אנונימי'}</p>
                                     <p class="text-[10px] font-bold text-gray-400">${date}</p>
                                 </div>
@@ -291,29 +278,24 @@
                     }
                 });
 
-                // БЛОКИРУЕМ ИНТЕРФЕЙС, ЕСЛИ УЖЕ ПРОГОЛОСОВАЛ
                 const statusEl = document.getElementById('rating-status');
                 if (userHasRated) {
                     document.getElementById('star-container').classList.add('disabled');
-                    statusEl.innerText = "כבר דירגת את העסק הזה! ✓"; // Уже оценил
-                    statusEl.className = "text-center font-black mt-4 p-2 rounded-lg border-2 bg-gray-100 border-gray-400 text-gray-600 block";
+                    statusEl.innerText = "כבר דירגת את העסק! ✓";
+                    statusEl.className = "text-center font-black mt-4 p-2 rounded-lg border-2 bg-gray-50 border-gray-300 text-gray-500 block";
                 } else {
                     document.getElementById('star-container').classList.remove('disabled');
-                    statusEl.className = "hidden"; // Прячем сообщение, если еще не голосовал
+                    statusEl.className = "hidden";
                 }
 
                 if (count > 0) {
-                    const avg = (sum / count).toFixed(1);
-                    document.getElementById('biz-rating-avg').innerText = avg;
+                    document.getElementById('biz-rating-avg').innerText = (sum / count).toFixed(1);
                     document.getElementById('biz-vote-count').innerText = count;
-                } else {
-                    document.getElementById('biz-rating-avg').innerText = "0.0";
-                    document.getElementById('biz-vote-count').innerText = "0";
                 }
             });
         }
 
-        loadData();
+        init();
     </script>
 </body>
 </html>
