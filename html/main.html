@@ -129,14 +129,44 @@
         </div>
     </main>
 
-    <div class="fixed bottom-0 left-0 right-0 faq-bar p-3 md:p-4 z-40 flex justify-center items-center">
-        <a href="faq.html" class="faq-button w-full max-w-sm flex items-center justify-center gap-3 py-3 px-6 rounded-xl font-bold text-sm md:text-base tracking-wide uppercase shadow-sm">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#FFD700]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <span class="tracking-tight">מרכז מידע ושאלות נפוצות (FAQ)</span>
-        </a>
-    </div>
+    <footer class="fixed bottom-0 left-0 right-0 z-50 p-3 bg-white border-t-4 border-black">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-2 lowercase tracking-tight font-black text-[10px] sm:text-xs">
+                
+                <div class="text-center md:text-left text-black">
+                    <span>created by</span>
+                    <a href="https://www.linkedin.com/in/sviatoslav-burnashov/" 
+                       target="_blank" 
+                       class="underline decoration-2 decoration-[#FFD700] hover:bg-[#FFD700] transition-all">
+                       @kayoosh_x
+                    </a>
+                    <span>supported by</span>
+                    <a href="https://www.linkedin.com/in/yoni-kedem/" 
+                       target="_blank" 
+                       class="underline decoration-2 decoration-[#FFD700] hover:bg-[#FFD700] transition-all">
+                       yoni kedem
+                    </a>
+                    <span class="opacity-50">in 2027</span>
+                </div>
+
+                <div class="text-center">
+                    <span>for more information</span>
+                    <a href="faq.html" 
+                       class="font-bold underline decoration-2 decoration-black hover:text-[#FFD700] transition-colors">
+                       click here
+                    </a>
+                </div>
+
+                <div class="flex items-center gap-1 italic">
+                    <span>made with</span>
+                    <span class="text-red-500 animate-pulse">❤️</span>
+                </div>
+
+            </div>
+        </div>
+    </footer>
+
+    <div class="h-20 md:h-16"></div>
 
     <script type="module" src = "../js/main.js"></script>
 </body>

@@ -4,117 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jobi — פרטי עסק</title>
+    <link rel="icon" type="image/png" href="img/logo.png">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;700;900&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Heebo', sans-serif; background-color: #f0f0f0; color: #000; }
-        .neo-card { border: 4px solid black; box-shadow: 10px 10px 0px 0px rgba(0,0,0,1); background: white; border-radius: 32px; }
-        .neo-btn { border: 3px solid black; box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); transition: 0.2s; font-weight: 900; cursor: pointer; }
-        .neo-btn:active { transform: translate(3px, 3px); box-shadow: none; }
+        body { font-family: 'Heebo', sans-serif; background-color: #f9fafb; }
+        .neo-card { border: 4px solid black; box-shadow: 8px 8px 0px 0px rgba(0,0,0,1); background: white; border-radius: 24px; transition: all 0.3s; }
+        .neo-btn { border: 3px solid black; box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); transition: 0.1s; font-weight: 900; cursor: pointer; }
+        .neo-btn:active { transform: translate(4px, 4px); box-shadow: 0px 0px 0px 0px rgba(0,0,0,1); }
         
-        /* Skeleton Animation */
-        .skeleton { background: #e0e0e0; border-radius: 16px; position: relative; overflow: hidden; }
-        .skeleton::after {
-            content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
-            animation: loading 1.5s infinite;
-        }
-        @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-
-        /* Star Rating System */
-        .star-rating { display: flex; flex-direction: row-reverse; justify-content: flex-end; gap: 4px; }
+        .star-rating { display: flex; flex-direction: row-reverse; justify-content: center; gap: 8px; }
         .star-rating input { display: none; }
-        .star-rating label { font-size: 32px; color: #ccc; cursor: pointer; transition: color 0.2s; }
+        .star-rating label { font-size: 45px; color: #e5e7eb; cursor: pointer; transition: 0.2s; text-shadow: 2px 2px 0px #000; }
         .star-rating label:hover, .star-rating label:hover ~ label,
-        .star-rating input:checked ~ label { color: #FFD700; }
+        .star-rating input:checked ~ label { color: #FFD700; transform: scale(1.1); }
+        
+        /* Класс для отключения звездочек, если уже голосовал */
+        .star-rating.disabled label { pointer-events: none; color: #e5e7eb !important; opacity: 0.5; }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #FFD700; border-radius: 4px; }
     </style>
 </head>
-<body class="pb-10">
+<body class="pb-20 relative min-h-screen">
 
-    <header class="p-6 sticky top-0 bg-[#f0f0f0]/90 backdrop-blur-md z-50">
-        <div class="container mx-auto flex justify-between items-center">
-            <button onclick="window.location.href='main.html'" class="neo-btn bg-white px-6 py-2 rounded-2xl italic">← חזרה</button>
-            <span class="text-3xl font-black italic tracking-tighter">Jobi</span>
+    <div id="loading-screen" class="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
+        <div class="w-24 h-24 border-8 border-black border-t-[#FFD700] rounded-full animate-spin shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] mb-6"></div>
+        <h2 class="text-4xl font-black italic animate-pulse">טוען נתונים...</h2>
+    </div>
+
+    <header class="bg-[#FFD700] p-4 sticky top-0 z-50 shadow-lg border-b-4 border-black mb-8">
+        <div class="container mx-auto flex items-center justify-between max-w-4xl">
+            <button onclick="window.location.href='main.html'" class="neo-btn bg-white px-5 py-2 rounded-xl italic text-lg flex items-center gap-2">
+                <span>חזרה</span> <span>➔</span>
+            </button>
+            <div class="flex items-center gap-2">
+                <span class="text-3xl font-black italic tracking-tighter text-black">Jobi</span>
+            </div>
         </div>
     </header>
 
-    <div id="skeleton-loader" class="container mx-auto px-4 max-w-4xl">
-        <div class="skeleton h-64 md:h-80 w-full mb-8 border-4 border-black"></div>
-        <div class="skeleton h-12 w-3/4 mb-4"></div>
-        <div class="skeleton h-6 w-1/2 mb-10"></div>
-    </div>
-
-    <main id="main-content" class="hidden container mx-auto px-4 max-w-4xl">
-        <div class="neo-card overflow-hidden mb-12">
-            <div class="h-64 md:h-80 border-b-4 border-black relative bg-gray-200">
-                <img id="biz-image" src="" class="w-full h-full object-cover">
-                <div class="absolute bottom-6 right-6 bg-[#FFD700] border-4 border-black font-black px-4 py-2 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
-                    <span id="biz-rating-avg">0.0</span> ⭐
-                </div>
+    <main id="main-content" class="container mx-auto px-4 max-w-4xl hidden opacity-0 transition-opacity duration-500">
+        
+        <div class="neo-card overflow-hidden mb-10 p-6 md:p-8 relative">
+            <div class="absolute top-6 left-6 bg-[#FFD700] border-4 border-black font-black px-4 py-2 rounded-2xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] text-2xl z-10">
+                <span id="biz-rating-avg">0.0</span> ⭐ 
+                <div class="text-[11px] opacity-70 text-center uppercase mt-1"><span id="biz-vote-count">0</span> הצבעות</div>
             </div>
 
-            <div class="p-6 md:p-10 text-right">
-                <h1 id="biz-name" class="text-5xl font-black italic mb-2"></h1>
-                <p id="biz-address" class="text-xl font-bold text-gray-500 mb-8 italic"></p>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-10">
-                    <div class="border-4 border-black p-4 rounded-2xl bg-white">
-                        <span class="block text-sm font-black text-gray-400">🕒 זמן עבודה</span>
-                        <span id="biz-hours" class="text-lg font-black"></span>
-                    </div>
-                    <div class="border-4 border-black p-4 rounded-2xl bg-white">
-                        <span class="block text-sm font-black text-gray-400">📧 אימייל Jobi</span>
-                        <span id="biz-email" class="text-lg font-black break-all"></span>
-                    </div>
-                    <div class="border-4 border-black p-4 rounded-2xl bg-white">
-                        <span class="block text-sm font-black text-gray-400">📞 טלפון ליצירת קשר</span>
-                        <span id="biz-phone" class="text-lg font-black italic"></span>
-                    </div>
-                    <div class="border-4 border-black p-4 rounded-2xl bg-[#FFD700]">
-                        <span class="block text-sm font-black text-black/50">💰 שכר לשעה</span>
-                        <span class="text-2xl font-black italic">₪<span id="biz-salary"></span></span>
-                    </div>
+            <div class="flex flex-col md:flex-row gap-8 items-start">
+                <div class="w-full md:w-1/3 aspect-square border-4 border-black rounded-3xl overflow-hidden shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-gray-100 flex-shrink-0">
+                    <img id="biz-image" src="" class="w-full h-full object-cover" alt="לוגו העסק">
                 </div>
+                
+                <div class="flex-1 w-full">
+                    <h1 id="biz-name" class="text-5xl font-black italic mb-2 text-black tracking-tighter"></h1>
+                    <p id="biz-location" class="text-xl font-bold text-gray-500 mb-6 italic flex items-center gap-2">📍 <span></span></p>
+                    <p id="biz-desc" class="text-lg font-bold border-r-4 border-[#FFD700] pr-4 mb-8 leading-relaxed"></p>
 
-                <div class="mb-10">
-                    <h2 class="text-3xl font-black italic mb-4">תיאור העסק</h2>
-                    <p id="biz-desc" class="text-xl font-bold leading-relaxed text-gray-800 italic"></p>
-                </div>
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <div class="border-2 border-black p-3 rounded-xl bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                            <span class="block text-xs font-black text-gray-500 uppercase">שעות פעילות</span>
+                            <span id="biz-hours" class="font-bold text-lg"></span>
+                        </div>
+                        <div class="border-2 border-black p-3 rounded-xl bg-[#FFD700] shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                            <span class="block text-xs font-black text-black/60 uppercase">שכר התחלתי</span>
+                            <span class="font-black text-xl italic">₪<span id="biz-salary"></span>/שעה</span>
+                        </div>
+                        <div class="border-2 border-black p-3 rounded-xl bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                            <span class="block text-xs font-black text-gray-500 uppercase">גיל מינימלי</span>
+                            <span class="font-black text-lg text-red-600"><span id="biz-age"></span>+</span>
+                        </div>
+                        <div class="border-2 border-black p-3 rounded-xl bg-gray-50 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                            <span class="block text-xs font-black text-gray-500 uppercase">דרישות</span>
+                            <span id="biz-traits" class="font-bold text-sm leading-tight block mt-1"></span>
+                        </div>
+                    </div>
 
-                <div class="flex flex-col sm:flex-row gap-4">
-                    <a id="call-link" href="" class="neo-btn bg-black text-[#FFD700] flex-1 text-center py-5 text-2xl italic">התקשר עכשיו</a>
+                    <a id="call-link" href="#" class="neo-btn bg-black text-[#FFD700] w-full block text-center py-4 text-3xl font-black italic rounded-2xl">📞 התקשר עכשיו</a>
                 </div>
             </div>
         </div>
 
-        <section class="pb-20">
-            <h2 class="text-4xl font-black italic mb-8">ביקורות מהשטח</h2>
-            
-            <div class="neo-card p-6 mb-10 bg-[#FFD700]/10">
-                <div class="flex flex-col gap-4">
-                    <div class="flex items-center justify-between">
-                        <span class="font-black italic">איך היה לך? דרג:</span>
-                        <div class="star-rating">
-                            <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
-                            <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
-                            <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
-                            <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
-                            <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
-                        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <div class="space-y-8">
+                <div class="neo-card p-6 bg-white border-t-8 border-t-[#FFD700]">
+                    <h3 class="text-2xl font-black italic mb-4 text-center">איך היה שם? דירוג מהיר</h3>
+                    <div class="star-rating" id="star-container">
+                        <input type="radio" id="star5" name="rating" value="5"><label for="star5">★</label>
+                        <input type="radio" id="star4" name="rating" value="4"><label for="star4">★</label>
+                        <input type="radio" id="star3" name="rating" value="3"><label for="star3">★</label>
+                        <input type="radio" id="star2" name="rating" value="2"><label for="star2">★</label>
+                        <input type="radio" id="star1" name="rating" value="1"><label for="star1">★</label>
                     </div>
-                    <textarea id="comment-input" maxlength="500" placeholder="כתוב כאן... (עד 500 תווים)" class="w-full p-4 border-4 border-black rounded-2xl font-bold h-32 focus:outline-none focus:bg-white transition-all"></textarea>
-                    <button id="post-comment" class="neo-btn bg-black text-white py-4 rounded-2xl text-xl italic">פרסם תגובה</button>
+                    <p id="rating-status" class="text-center font-black mt-4 hidden p-2 rounded-lg border-2"></p>
+                </div>
+
+                <div class="neo-card p-6 bg-black text-white">
+                    <h3 class="text-2xl font-black italic mb-4 text-right text-[#FFD700]">ספר למחפשי עבודה אחרים</h3>
+                    <textarea id="comment-input" placeholder="מה אהבת? מה פחות? תן פרטים..." class="w-full p-4 border-4 border-[#FFD700] rounded-2xl font-bold h-32 focus:outline-none mb-4 text-black"></textarea>
+                    <button id="post-comment" class="neo-btn bg-[#FFD700] text-black w-full py-4 rounded-xl text-2xl italic hover:bg-white transition-colors">שלח ביקורת 🚀</button>
                 </div>
             </div>
 
-            <div id="comments-list" class="space-y-6">
+            <section>
+                <h2 class="text-3xl font-black italic mb-6 border-b-4 border-black pb-2 inline-block">מה אחרים אומרים:</h2>
+                <div id="comments-list" class="space-y-6">
                 </div>
-        </section>
+            </section>
+        </div>
     </main>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, where, orderBy, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getFirestore, doc, getDoc, collection, addDoc, onSnapshot, query, where, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyDA9KfdcE2acdeSgkfRVS_KiX1eBBrR1Ao",
@@ -128,104 +132,188 @@
 
         const urlParams = new URLSearchParams(window.location.search);
         const bizId = urlParams.get('id');
-        const userId = localStorage.getItem('user_id');
 
-        async function loadBusiness() {
-            if (!bizId) return window.location.href = 'main.html';
-            
-            const docRef = doc(db, "businesses", bizId);
-            const snap = await getDoc(docRef);
+        let userId = localStorage.getItem('jobi_user_id');
+        if (!userId) {
+            userId = 'user_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('jobi_user_id', userId);
+        }
 
-            if (snap.exists()) {
-                const d = snap.data();
-                document.getElementById('biz-name').innerText = d.name;
-                document.getElementById('biz-address').innerText = '📍 ' + (d.location || 'כתובת לא צוינה');
-                document.getElementById('biz-email').innerText = d.email;
-                document.getElementById('biz-phone').innerText = d.phone;
-                document.getElementById('biz-hours').innerText = d.hours || 'לא צוין';
-                document.getElementById('biz-salary').innerText = d.defaultSalary || '40';
-                document.getElementById('biz-desc').innerText = d.description;
-                document.getElementById('biz-image').src = d.logo || 'img/default.png';
-                document.getElementById('call-link').href = 'tel:' + d.phone;
+        let userHasRated = false; // Переменная для проверки, голосовал ли уже юзер
 
-                document.getElementById('skeleton-loader').classList.add('hidden');
-                document.getElementById('main-content').classList.remove('hidden');
-                
-                loadComments();
+        async function loadData() {
+            if (!bizId) {
+                alert("שגיאה: חסר מזהה עסק בקישור");
+                window.location.href = 'main.html';
+                return;
+            }
+
+            try {
+                const docRef = doc(db, "businesses", bizId);
+                const snap = await getDoc(docRef);
+
+                if (snap.exists()) {
+                    const d = snap.data();
+                    document.getElementById('biz-name').innerText = d.name || 'שם לא ידוע';
+                    document.getElementById('biz-location').querySelector('span').innerText = d.location || 'כתובת לא צוינה';
+                    document.getElementById('biz-desc').innerText = d.description || 'אין תיאור לעסק זה.';
+                    document.getElementById('biz-hours').innerText = d.hours || 'לא צוין';
+                    document.getElementById('biz-salary').innerText = d.defaultSalary || '---';
+                    document.getElementById('biz-age').innerText = d.defaultAge || '16';
+                    document.getElementById('biz-traits').innerText = d.traits || 'לא צוינו דרישות מיוחדות';
+                    document.getElementById('call-link').href = 'tel:' + (d.phone || '');
+                    
+                    const imgEl = document.getElementById('biz-image');
+                    imgEl.src = d.logo || 'https://via.placeholder.com/400x400?text=Jobi';
+
+                    document.getElementById('loading-screen').classList.add('opacity-0');
+                    setTimeout(() => {
+                        document.getElementById('loading-screen').classList.add('hidden');
+                        const main = document.getElementById('main-content');
+                        main.classList.remove('hidden');
+                        setTimeout(() => main.classList.remove('opacity-0'), 50);
+                    }, 500);
+
+                    loadReviews();
+                } else {
+                    alert("העסק לא נמצא במערכת");
+                    window.location.href = 'main.html';
+                }
+            } catch (error) {
+                console.error("Error loading business:", error);
             }
         }
 
-        function loadComments() {
-            const q = query(collection(db, "reviews"), where("businessId", "==", bizId), orderBy("likes", "desc"));
+        // ОТПРАВКА ОЦЕНКИ
+        document.querySelectorAll('input[name="rating"]').forEach(star => {
+            star.onclick = async (e) => {
+                // Защита: если уже голосовал, не даем отправить
+                if (userHasRated) {
+                    alert("כבר דירגת את העסק הזה!");
+                    e.preventDefault();
+                    return;
+                }
+
+                const val = parseInt(e.target.value);
+                
+                // Блокируем звезды на время отправки
+                document.getElementById('star-container').classList.add('disabled');
+                
+                try {
+                    await addDoc(collection(db, "reviews"), {
+                        businessId: bizId,
+                        userId: userId,
+                        rating: val,
+                        type: "star",
+                        createdAt: Date.now()
+                    });
+                    
+                    userHasRated = true; // Отмечаем, что проголосовал
+                    
+                } catch (error) {
+                    console.error("Error saving star:", error);
+                    document.getElementById('star-container').classList.remove('disabled');
+                }
+            };
+        });
+
+        // ОТПРАВКА КОММЕНТАРИЯ (оставляем без изменений, комменты можно писать несколько раз)
+        document.getElementById('post-comment').onclick = async () => {
+            const inputEl = document.getElementById('comment-input');
+            const text = inputEl.value.trim();
+            
+            if (text.length < 3) {
+                alert("אנא כתוב תגובה ארוכה יותר");
+                return;
+            }
+
+            const btn = document.getElementById('post-comment');
+            btn.innerText = "שולח...";
+            btn.disabled = true;
+
+            try {
+                await addDoc(collection(db, "reviews"), {
+                    businessId: bizId,
+                    userId: userId,
+                    userName: 'משתמש Jobi',
+                    text: text,
+                    type: "text",
+                    createdAt: Date.now()
+                });
+                
+                inputEl.value = '';
+                alert("תודה! התגובה פורסמה.");
+            } catch (error) {
+                console.error("Error saving comment:", error);
+                alert("שגיאה בשליחת התגובה");
+            } finally {
+                btn.innerText = "שלח ביקורת 🚀";
+                btn.disabled = false;
+            }
+        };
+
+        // ЗАГРУЗКА ОТЗЫВОВ И ПРОВЕРКА "УЖЕ ПРОГОЛОСОВАЛ"
+        function loadReviews() {
+            const q = query(collection(db, "reviews"), where("businessId", "==", bizId), orderBy("createdAt", "desc"));
+            
             onSnapshot(q, (snap) => {
                 const list = document.getElementById('comments-list');
                 list.innerHTML = '';
-                let totalRating = 0;
-                
+                let sum = 0, count = 0;
+                userHasRated = false; // Сбрасываем перед проверкой
+
+                if (snap.empty) {
+                    list.innerHTML = '<p class="text-gray-500 font-bold italic">אין עדיין תגובות. תהיה הראשון!</p>';
+                }
+
                 snap.forEach(d => {
                     const r = d.data();
-                    const id = d.id;
-                    totalRating += r.rating;
-                    list.innerHTML += `
-                        <div class="neo-card p-6 bg-white flex flex-col gap-4 relative">
-                            <div class="flex items-center gap-4">
-                                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${r.userName}" class="w-12 h-12 border-2 border-black rounded-full bg-[#FFD700]">
-                                <div>
-                                    <h4 class="font-black italic">${r.userName}</h4>
-                                    <span class="text-yellow-500">${'★'.repeat(r.rating)}</span>
+                    
+                    // Проверяем, есть ли уже оценка от этого пользователя
+                    if (r.type === "star" && r.userId === userId) {
+                        userHasRated = true;
+                    }
+
+                    if (r.type === "star" && r.rating) {
+                        sum += r.rating;
+                        count++;
+                    } 
+                    else if (r.type === "text" && r.text) {
+                        const date = new Date(r.createdAt).toLocaleDateString('he-IL');
+                        list.innerHTML += `
+                            <div class="neo-card p-4 bg-white border-2">
+                                <div class="flex justify-between items-center mb-2">
+                                    <p class="font-black text-sm text-[#feb900]">${r.userName || 'אנונימי'}</p>
+                                    <p class="text-[10px] font-bold text-gray-400">${date}</p>
                                 </div>
-                                <div class="mr-auto group relative">
-                                    <button class="font-black text-2xl">⋮</button>
-                                    <div class="hidden group-hover:block absolute left-0 top-8 bg-white border-2 border-black rounded-xl shadow-xl z-10 overflow-hidden w-32">
-                                        <button onclick="window.like('${id}')" class="w-full p-2 text-right font-bold hover:bg-green-50 border-b-2 border-black">👍 אהבתי</button>
-                                        <button onclick="window.report('${id}')" class="w-full p-2 text-right font-bold hover:bg-red-50 text-red-500">🚩 דווח</button>
-                                    </div>
-                                </div>
-                            </div>
-                            <p class="font-bold italic text-gray-700">${r.text}</p>
-                            <div class="text-xs font-black opacity-30">${r.likes || 0} תומכים בביקורת זו</div>
-                        </div>
-                    `;
+                                <p class="font-bold italic text-gray-800 leading-tight">${r.text}</p>
+                            </div>`;
+                    }
                 });
-                
-                if (snap.size > 0) {
-                    document.getElementById('biz-rating-avg').innerText = (totalRating / snap.size).toFixed(1);
+
+                // БЛОКИРУЕМ ИНТЕРФЕЙС, ЕСЛИ УЖЕ ПРОГОЛОСОВАЛ
+                const statusEl = document.getElementById('rating-status');
+                if (userHasRated) {
+                    document.getElementById('star-container').classList.add('disabled');
+                    statusEl.innerText = "כבר דירגת את העסק הזה! ✓"; // Уже оценил
+                    statusEl.className = "text-center font-black mt-4 p-2 rounded-lg border-2 bg-gray-100 border-gray-400 text-gray-600 block";
+                } else {
+                    document.getElementById('star-container').classList.remove('disabled');
+                    statusEl.className = "hidden"; // Прячем сообщение, если еще не голосовал
+                }
+
+                if (count > 0) {
+                    const avg = (sum / count).toFixed(1);
+                    document.getElementById('biz-rating-avg').innerText = avg;
+                    document.getElementById('biz-vote-count').innerText = count;
+                } else {
+                    document.getElementById('biz-rating-avg').innerText = "0.0";
+                    document.getElementById('biz-vote-count').innerText = "0";
                 }
             });
         }
 
-        document.getElementById('post-comment').onclick = async () => {
-            if (!userId) return window.location.href = 'login.html';
-            
-            const text = document.getElementById('comment-input').value;
-            const ratingInput = document.querySelector('input[name="rating"]:checked');
-            
-            if (!ratingInput || text.length < 5) return alert("אנא בחר דירוג וכתוב תגובה עניינית");
-
-            await addDoc(collection(db, "reviews"), {
-                businessId: bizId,
-                userId: userId,
-                userName: localStorage.getItem('user_name') || 'משתמש Jobi',
-                text: text,
-                rating: parseInt(ratingInput.value),
-                likes: 0,
-                createdAt: Date.now()
-            });
-            
-            document.getElementById('comment-input').value = '';
-            alert("תודה על השיתוף!");
-        };
-
-        window.like = async (id) => {
-            await updateDoc(doc(db, "reviews", id), { likes: increment(1) });
-        };
-
-        window.report = async (id) => {
-            await addDoc(collection(db, "reports"), { reviewId: id, reportedBy: userId, time: Date.now() });
-            alert("דיווח נשלח למערכת.");
-        };
-
-        loadBusiness();
+        loadData();
     </script>
 </body>
 </html>

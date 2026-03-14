@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jobi — מרכז עזרה</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Heebo', sans-serif; background-color: #ffffff; color: #000; }
+        .neo-card { border: 4px solid black; box-shadow: 8px 8px 0px 0px rgba(0,0,0,1); background: white; border-radius: 24px; transition: 0.2s; }
+        .neo-input { border: 4px solid black; box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); outline: none; }
+        .neo-btn { border: 3px solid black; box-shadow: 4px 4px 0px 0px rgba(0,0,0,1); transition: 0.2s; font-weight: 900; }
+        .neo-btn:active { transform: translate(3px, 3px); box-shadow: none; }
+        .faq-item:hover { transform: translate(-2px, -2px); box-shadow: 10px 10px 0px 0px rgba(255, 215, 0, 1); }
+    </style>
+</head>
+<body class="pb-40">
+
+    <header class="p-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <button onclick="window.location.href='main.html'" class="neo-btn bg-white px-6 py-2 rounded-xl italic">← חזרה</button>
+            <h1 class="text-4xl font-black italic tracking-tighter">FAQ</h1>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 max-w-3xl">
+        <div class="mb-12">
+            <input type="text" id="faq-search" placeholder="חפש תשובה..." class="neo-input w-full p-5 text-xl font-bold rounded-2xl">
+        </div>
+
+        <div id="faq-list" class="space-y-6">
+            
+            <div class="faq-item neo-card p-6">
+                <h3 class="text-2xl font-black italic mb-3">מי אנחנו?</h3>
+                <p class="text-lg font-bold italic opacity-80">אנחנו Jobi, שירות אינטרנטי שנועד לחבר בין בני נוער (14-18) למעסיקים שמחפשים עובדים חרוצים. המטרה שלנו היא להנגיש את עולם העבודה לנוער בצורה בטוחה, מהירה וכיפית.</p>
+            </div>
+
+            <div class="faq-item neo-card p-6">
+                <h3 class="text-2xl font-black italic mb-3">איך נרשמים כעובד?</h3>
+                <p class="text-lg font-bold italic opacity-80">פשוט לוחצים על "כניסה" בתפריט הצדדי, נרשמים עם המייל וממלאים את הפרטים האישיים שלכם. אחרי זה תוכלו להגיש מועמדות לכל משרה!</p>
+            </div>
+
+            <div class="faq-item neo-card p-6">
+                <h3 class="text-2xl font-black italic mb-3">האם השירות עולה כסף?</h3>
+                <p class="text-lg font-bold italic opacity-80">בשבילכם, בני הנוער, השירות חינמי לחלוטין! אנחנו רוצים לעזור לכם להרוויח כסף, לא לקחת אותו מכם.</p>
+            </div>
+
+            <div class="faq-item neo-card p-6">
+                <h3 class="text-2xl font-black italic mb-3">איך יוצרים קשר עם עסק?</h3>
+                <p class="text-lg font-bold italic opacity-80">בתוך דף המשרה, תוכלו לראות כפתור "התקשר עכשיו" או "שלח הודעה". לחיצה עליהם תפתח לכם את האפשרות ליצור קשר ישיר.</p>
+            </div>
+
+            <div class="faq-item neo-card p-6">
+                <h3 class="text-2xl font-black italic mb-3">מה זה @jobi.israel?</h3>
+                <p class="text-lg font-bold italic opacity-80">זהו דומיין המייל הייחודי שלנו למעסיקים. כל עסק רשום מקבל חשבון מאומת כדי להבטיח את אמינות המשרה.</p>
+            </div>
+
+        </div>
+    </main>
+
+    <div class="fixed bottom-16 left-0 right-0 p-4 z-40 bg-white/80 backdrop-blur-md">
+        <div class="container mx-auto max-w-3xl flex flex-col sm:flex-row gap-4">
+            <button onclick="window.location.href='business/login.html'" class="neo-btn bg-[#FFD700] flex-1 py-4 text-lg italic">התחברות כעסק</button>
+            <button onclick="window.location.href='admin/login.html'" class="neo-btn bg-black text-white flex-1 py-4 text-lg italic">התחברות כמנהל מערכת</button>
+        </div>
+    </div>
+
+    <footer class="fixed bottom-0 left-0 right-0 z-50 p-3 bg-white border-t-4 border-black">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-2 lowercase tracking-tight font-black text-[10px] sm:text-xs">
+                <div class="text-center md:text-left text-black">
+                    <span>created by</span>
+                    <a href="https://www.linkedin.com/in/sviatoslav-burnashov-360b42350/" target="_blank" class="underline decoration-2 decoration-[#FFD700] hover:bg-[#FFD700] transition-all">@kayoosh_x</a>
+                    <span>supported by</span>
+                    <a href="https://www.linkedin.com/in/yoni-kedem/" target="_blank" class="underline decoration-2 decoration-[#FFD700] hover:bg-[#FFD700] transition-all">yoni kedem</a>
+                    <span class="opacity-50">in 2027</span>
+                </div>
+                <div class="flex items-center gap-1 italic">
+                    <span>made with</span>
+                    <span class="text-red-500">❤️</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Живой поиск по FAQ
+        document.getElementById('faq-search').addEventListener('input', function(e) {
+            const term = e.target.value.toLowerCase();
+            const items = document.querySelectorAll('.faq-item');
+
+            items.forEach(item => {
+                const text = item.innerText.toLowerCase();
+                if(text.includes(term)) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
